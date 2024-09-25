@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         elevation: 2,
-        title: const Text("Calendar"),
+        title: const Text("FYP Calendar ver1.1"),
       ),
       body: PageView(
         controller: _pageController,
@@ -54,11 +54,17 @@ class _HomeState extends State<Home> {
 
           ),
           CleanCalendar(
+            weekdaysSymbol: const Weekdays(sunday: "Sun", monday: "Mon", tuesday: "Tue", wednesday: "Wed", thursday: "Thur", friday: "Fri", saturday: "Sat"),
             generalDatesProperties: DatesProperties(
               datesDecoration: DatesDecoration(
-
               ),
               // Configuration for the CleanCalendar widget
+            ),
+            currentDateProperties: DatesProperties(
+              datesDecoration: DatesDecoration(
+                datesBorderColor: Colors.lightGreen.shade700,
+                datesTextColor: Colors.lightGreen.shade700,
+              ),
             ),
           ),
           Center(
@@ -96,6 +102,7 @@ class _HomeState extends State<Home> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
       ),
     );
