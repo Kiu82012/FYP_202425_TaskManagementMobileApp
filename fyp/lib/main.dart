@@ -1,5 +1,5 @@
-import 'package:clean_calendar/clean_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/CalendarView.dart';
 
 void main() => runApp(const MyApp());
 
@@ -32,6 +32,8 @@ class _HomeState extends State<Home> {
 
   List<DateTime> selectedDates = [];
 
+  CalendarView calendarView = CalendarView();
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -53,19 +55,8 @@ class _HomeState extends State<Home> {
             child: Text('Home Page'),
 
           ),
-          CleanCalendar(
-            weekdaysSymbol: const Weekdays(sunday: "Sun", monday: "Mon", tuesday: "Tue", wednesday: "Wed", thursday: "Thur", friday: "Fri", saturday: "Sat"),
-            generalDatesProperties: DatesProperties(
-              datesDecoration: DatesDecoration(
-              ),
-              // Configuration for the CleanCalendar widget
-            ),
-            currentDateProperties: DatesProperties(
-              datesDecoration: DatesDecoration(
-                datesBorderColor: Colors.lightGreen.shade700,
-                datesTextColor: Colors.lightGreen.shade700,
-              ),
-            ),
+          Center(
+              child: CalendarView(),
           ),
           Center(
             child: Text('To-Do-List'),
