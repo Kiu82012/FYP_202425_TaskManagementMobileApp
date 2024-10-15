@@ -1,9 +1,14 @@
 import 'package:clean_calendar/clean_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp/ToDoList.dart';
+import 'package:fyp/database.dart';
 import 'package:fyp/dialog_box.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async{
+  await Hive.initFlutter();
+  //open a box
+  var box= await Hive.openBox('mybox');
   runApp(const MyApp());
 }
 
@@ -31,21 +36,40 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  final _myBox=Hive.box('mybox');
+
+  ToDoDataBase db=ToDoDataBase();
+
+  @override
+  void initState() {
+
+    //if this is the first time ever opening the app
+
+    if(_myBox.get("TODOLIST")==null){
+      db.createInitialData();
+    }else{
+      //there already exists data
+      db.loadData();
+    }
+    super.initState();
+  }
+
+
+
   int _selectedIndex = 0; // Index of the selected tab
   PageController _pageController = PageController();
 
   //text controller
   final _controller=TextEditingController();
   List<DateTime> selectedDates = [];
-  List toDoList = [
-    ["Make tutorial", false],
-    ["Do exercise", false],
-  ];
+
  //checkbox was tapped
   void checkBoxChanged(bool? value, int index) {
     setState(() {
-      toDoList[index][1] = !toDoList[index][1];
+      db.toDoList[index][1] = !db.toDoList[index][1];
     });
+    db.updateDataBase();
   }
 
   void _onItemTapped(int index) {
@@ -57,10 +81,11 @@ class _HomeState extends State<Home> {
 //save new task
   void saveNewTask(){
     setState(() {
-      toDoList.add([_controller.text,false]);
+      db.toDoList.add([_controller.text,false]);
       _controller.clear();
     });
     Navigator.of(context).pop();
+    db.updateDataBase();
   }
 
 //create a new task
@@ -77,9 +102,9 @@ class _HomeState extends State<Home> {
 
   void deleteTask(int index){
     setState(() {
-      toDoList.removeAt(index);
+      db.toDoList.removeAt(index);
     });
-
+    db.updateDataBase();
   }
 
 
@@ -120,11 +145,11 @@ class _HomeState extends State<Home> {
           Stack(
             children: [
               ListView.builder(
-              itemCount: toDoList.length,
+              itemCount: db.toDoList.length,
                 itemBuilder: (BuildContext context, int index) {
                return Todolist(
-                 taskName: toDoList[index][0],
-                 taskCompleted: toDoList[index][1],
+                 taskName: db.toDoList[index][0],
+                 taskCompleted: db.toDoList[index][1],
                   onChanged: (value) => checkBoxChanged(value, index),
                 deleteFunction: (context)=> deleteTask(index),
                );
