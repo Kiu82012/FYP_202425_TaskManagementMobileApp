@@ -64,6 +64,7 @@ class _HomeState extends State<Home> {
   final _controller=TextEditingController();
   List<DateTime> selectedDates = [];
 
+
  //checkbox was tapped
   void checkBoxChanged(bool? value, int index) {
     setState(() {
@@ -124,16 +125,41 @@ class _HomeState extends State<Home> {
           ),
           CleanCalendar(
             weekdaysSymbol: const Weekdays(
-                sunday: "Sun",
-                monday: "Mon",
-                tuesday: "Tue",
-                wednesday: "Wed",
-                thursday: "Thur",
-                friday: "Fri",
-                saturday: "Sat"),
+              sunday: "Sun",
+              monday: "Mon",
+              tuesday: "Tue",
+              wednesday: "Wed",
+              thursday: "Thur",
+              friday: "Fri",
+              saturday: "Sat",
+            ),
+            dateSelectionMode: DatePickerSelectionMode.singleOrMultiple,
+            onSelectedDates: (List<DateTime> value) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Selected Date"),
+                    content: Text("You selected: ${value.first}"),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Close'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
             generalDatesProperties: DatesProperties(
               datesDecoration: DatesDecoration(),
               // Configuration for the CleanCalendar widget
+            ),
+            selectedDatesProperties: DatesProperties(
+              // To disable taps on selected dates.
+              disable: false,
             ),
             currentDateProperties: DatesProperties(
               datesDecoration: DatesDecoration(
