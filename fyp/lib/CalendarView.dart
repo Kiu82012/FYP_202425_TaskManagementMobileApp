@@ -65,6 +65,23 @@ class _CalendarViewState extends State<CalendarView> {
           onCellTap: (events, date) {
             CalendarEventData eventData = CalendarEventData(title: "add ", date: date);
             eventController.add(eventData);
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Selected Date"),
+                  content: Text("You selected: ${date}"),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('Close'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
           },
         ),
         floatingActionButton: FloatingActionButton(
