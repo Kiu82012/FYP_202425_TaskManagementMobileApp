@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'AddEvent.dart';
 
 enum CalendarType { week, month }
 
@@ -87,6 +88,10 @@ class _CalendarViewState extends State<CalendarView> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             // Pressed Button add event here
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddEvent()),
+            );
           },
           backgroundColor: Colors.lightBlue,
           child: Icon(Icons.add, color: Colors.white),
@@ -124,6 +129,7 @@ class _CalendarViewState extends State<CalendarView> {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             // Pressed Button add event here
+
           },
           backgroundColor: Colors.lightBlue,
           child: Icon(Icons.add, color: Colors.white),
