@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'AddEvent.dart';
+import 'EventDatabase.dart'; // Import your EventDatabase
 
 enum CalendarType { week, month }
 
@@ -15,6 +16,40 @@ class CalendarView extends StatefulWidget {
 class _CalendarViewState extends State<CalendarView> {
   CalendarType type = CalendarType.month;
 
+  // Create an EventDatabase instance
+  EventDatabase eventDatabase = EventDatabase(); // Modified
+
+  // Initialize the EventController
+  EventController eventController = EventController(); // Modified
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEvents(); // Load events on initialization
+  }
+
+  // Load events from the database into the event controller
+  void _loadEvents() {
+    for (var event in eventDatabase.events) {
+      DateTime startDateTime = DateTime(
+        event.date.year,
+        event.date.month,
+        event.date.day,
+        event.time?.hour ?? 0,
+        event.time?.minute ?? 0,
+      );
+
+      DateTime endDateTime = startDateTime.add(Duration(hours: 1));
+
+      eventController.add(CalendarEventData(
+        title: event.name,
+        date: event.date,
+        startTime: startDateTime,
+        endTime: endDateTime,
+      ));
+    }
+  }
+
   void changeCalendarType(CalendarType newType) {
     setState(() {
       type = newType; // Update the calendar type
@@ -23,18 +58,16 @@ class _CalendarViewState extends State<CalendarView> {
 
   @override
   Widget build(BuildContext context) {
-    EventController eventController = EventController();
-
     switch (type) {
       case CalendarType.month:
         return CalendarControllerProvider(
-          controller: eventController,
-          child: buildMonthViewApp(eventController),
+          controller: eventController, // Provide the eventController
+          child: buildMonthViewApp(),
         );
       case CalendarType.week:
         return CalendarControllerProvider(
-            controller: eventController,
-            child: buildWeekViewApp(eventController)
+          controller: eventController, // Provide the eventController
+          child: buildWeekViewApp(),
         );
     }
   }
@@ -43,7 +76,7 @@ class _CalendarViewState extends State<CalendarView> {
   //==Month View=================================================================================================================
   //==============================================================================================================================
 
-  MaterialApp buildMonthViewApp(EventController eventController) {
+  MaterialApp buildMonthViewApp() {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -64,8 +97,6 @@ class _CalendarViewState extends State<CalendarView> {
           cellAspectRatio: 0.65,
           showWeekTileBorder: true,
           onCellTap: (events, date) {
-            CalendarEventData eventData = CalendarEventData(title: "add ", date: date);
-            eventController.add(eventData);
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -86,12 +117,13 @@ class _CalendarViewState extends State<CalendarView> {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Pressed Button add event here
-            Navigator.push(
+          onPressed: () async {
+            // Navigate and add event
+            await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddEvent()),
+              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: eventDatabase)), // Pass eventDatabase
             );
+            _loadEvents(); // Reload events after adding a new one
           },
           backgroundColor: Colors.lightBlue,
           child: Icon(Icons.add, color: Colors.white),
@@ -104,7 +136,7 @@ class _CalendarViewState extends State<CalendarView> {
   //==Week View===================================================================================================================
   //==============================================================================================================================
 
-  MaterialApp buildWeekViewApp(EventController eventController) {
+  MaterialApp buildWeekViewApp() {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -125,11 +157,34 @@ class _CalendarViewState extends State<CalendarView> {
           startDay: WeekDays.sunday,
           startHour: 6,
           endHour: 23,
+          onEventTap: (events, date) { // Modified to handle event taps
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Events"),
+                  content: Text("Events on: ${date}"),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('Close'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Pressed Button add event here
-
+          onPressed: () async {
+            // Navigate and add event
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: eventDatabase)), // Pass eventDatabase
+            );
+            _loadEvents(); // Reload events after adding a new one
           },
           backgroundColor: Colors.lightBlue,
           child: Icon(Icons.add, color: Colors.white),
