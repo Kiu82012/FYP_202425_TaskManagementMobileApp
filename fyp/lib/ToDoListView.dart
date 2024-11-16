@@ -1,9 +1,13 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:hive/hive.dart';
 import 'AddEvent.dart';
+import 'database.dart';
+import 'dialog_box.dart';
 
 class ToDoListView extends StatefulWidget {
+
   const ToDoListView({super.key});
 
   @override
@@ -11,6 +15,67 @@ class ToDoListView extends StatefulWidget {
 }
 
 class _ToDoListView extends State<ToDoListView> {
+
+  final _myBox=Hive.box('mybox');
+
+  ToDoDataBase db=ToDoDataBase();
+
+  @override
+  void initState(){
+    //if this is the first time ever opening the app
+
+    if(_myBox.get("TODOLIST")==null){
+      db.createInitialData();
+    }else{
+      //there already exists data
+      db.loadData();
+    }
+    super.initState();
+  }
+
+  //checkbox was tapped
+  void checkBoxChanged(bool? value, int index) {
+    setState(() {
+      db.toDoList[index][1] = !db.toDoList[index][1];
+    });
+    db.updateDataBase();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      _pageController.jumpToPage(index);
+    });
+  }
+//save new task
+  void saveNewTask(){
+    setState(() {
+      db.toDoList.add([_controller.text,false]);
+      _controller.clear();
+    });
+    Navigator.of(context).pop();
+    db.updateDataBase();
+  }
+
+//create a new task
+  void createNewTask(){
+    showDialog(context: context, builder: (context){
+      return DialogBox(
+        controller: _controller,
+        onSave: saveNewTask,
+        onCancel: ()=> Navigator.of(context).pop(),);
+    });
+  }
+
+  //delete a task
+
+  void deleteTask(int index){
+    setState(() {
+      db.toDoList.removeAt(index);
+    });
+    db.updateDataBase();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
