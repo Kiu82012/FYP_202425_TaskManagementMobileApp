@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/CalendarView.dart';
+import 'package:fyp/ToDoListView.dart';
 
 void main() => runApp(const MyApp());
 
@@ -59,7 +60,7 @@ class _HomeState extends State<Home> {
               child: CalendarView(),
           ),
           Center(
-            child: Text('To-Do-List'),
+            child: ToDoListView(),
           ),
           Center(
             child: Text('Reminder'),
