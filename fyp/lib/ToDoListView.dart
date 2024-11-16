@@ -1,10 +1,8 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:calendar_view/calendar_view.dart';
 import 'package:hive/hive.dart';
-import 'AddEvent.dart';
-import 'database.dart';
-import 'dialog_box.dart';
+import 'TodoList.dart';
+import 'ToDoDataBase.dart';
+import 'DialogBox.dart';
 
 class ToDoListView extends StatefulWidget {
 
@@ -16,7 +14,7 @@ class ToDoListView extends StatefulWidget {
 
 class _ToDoListView extends State<ToDoListView> {
 
-  final _myBox=Hive.box('mybox');
+  final _myBox = Hive.box('mybox');
 
   ToDoDataBase db=ToDoDataBase();
 
@@ -32,6 +30,12 @@ class _ToDoListView extends State<ToDoListView> {
     }
     super.initState();
   }
+
+  int _selectedIndex = 0; // Index of the selected tab
+  PageController _pageController = PageController();
+
+  //text controller
+  final _controller=TextEditingController();
 
   //checkbox was tapped
   void checkBoxChanged(bool? value, int index) {
@@ -78,29 +82,30 @@ class _ToDoListView extends State<ToDoListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ListView.builder(
-          itemCount: db.toDoList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Todolist(
-              taskName: db.toDoList[index][0],
-              taskCompleted: db.toDoList[index][1],
-              onChanged: (value) => checkBoxChanged(value, index),
-              deleteFunction: (context)=> deleteTask(index),
-            );
-          },
-        ),
-        Positioned(
-          bottom: 16.0,
-          right: 16.0,
-          child:FloatingActionButton(
-            onPressed: createNewTask,
-            child: Icon(Icons.add),
+    return Scaffold(
+      body: Stack(
+        children: [
+          ListView.builder(
+            itemCount: db.toDoList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Todolist(
+                taskName: db.toDoList[index][0],
+                taskCompleted: db.toDoList[index][1],
+                onChanged: (value) => checkBoxChanged(value, index),
+                deleteFunction: (context)=> deleteTask(index),
+              );
+            },
           ),
-        )
-      ],
-    ),
+          Positioned(
+            bottom: 16.0,
+            right: 16.0,
+            child:FloatingActionButton(
+              onPressed: createNewTask,
+              child: Icon(Icons.add),
+            ),
+          )
+        ],
+      ),
+    );
   }
-
 }

@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/CalendarView.dart';
+import 'package:fyp/Event.dart';
 import 'package:fyp/ToDoListView.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_flutter/adapters.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+
+  // Initial Database
+  await Hive.initFlutter();
+  //open 2 boxes for separated database
+  await Hive.openBox('mybox');
+
+  Hive.registerAdapter(EventAdapter());
+
+  await Hive.openBox('eventBox');
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,7 +26,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Calendar App1.1.1',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
@@ -45,25 +60,14 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 2,
-        title: const Text("FYP Calendar ver1.1"),
-      ),
       body: PageView(
         controller: _pageController,
         children:  [
           Center(
-            child: Text('Home Page'),
-
-          ),
-          Center(
-              child: CalendarView(),
+            child: CalendarView(),
           ),
           Center(
             child: ToDoListView(),
-          ),
-          Center(
-            child: Text('Reminder'),
           ),
         ],
         onPageChanged: (index) {
@@ -75,10 +79,6 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Calendar',
           ),
@@ -86,10 +86,6 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist),
             label: 'To-Do-List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.note),
-            label: 'Reminder',
           ),
         ],
         currentIndex: _selectedIndex,

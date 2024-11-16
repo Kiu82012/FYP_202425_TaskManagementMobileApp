@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Event.dart';
 import 'EventDatabase.dart';
 
 class AddEvent extends StatefulWidget {
@@ -48,13 +49,17 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
-  void _saveEvent() {
+  void _updateEvent() {
     if (_formKey.currentState!.validate()) {
-      widget.eventDatabase.addEvent(Event(
+
+      Event newEvent = Event(
         name: _eventNameController.text,
         date: _selectedDate!,
         time: _selectedTime,
-      ));
+      );
+
+      EventDatabase db = EventDatabase();
+      db.addEvent(newEvent);
 
       _eventNameController.clear();
       _selectedDate = null;
@@ -118,8 +123,8 @@ class _AddEventState extends State<AddEvent> {
               ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: _saveEvent,
-                child: Text('Save Event'),
+                onPressed: _updateEvent,
+                child: Text('Save events'),
               ),
             ],
           ),

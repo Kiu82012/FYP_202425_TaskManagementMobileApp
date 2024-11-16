@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'AddEvent.dart';
+import 'Event.dart';
 import 'EventDatabase.dart'; // Import your EventDatabase
 
 enum CalendarType { week, month }
@@ -17,7 +18,7 @@ class _CalendarViewState extends State<CalendarView> {
   CalendarType type = CalendarType.month;
 
   // Create an EventDatabase instance
-  EventDatabase eventDatabase = EventDatabase(); // Modified
+  EventDatabase db = EventDatabase(); // Modified
 
   // Initialize the EventController
   EventController eventController = EventController(); // Modified
@@ -28,9 +29,18 @@ class _CalendarViewState extends State<CalendarView> {
     _loadEvents(); // Load events on initialization
   }
 
+  @override
+  void dispose(){
+    super.dispose();
+    _saveEvents;();
+  }
+
   // Load events from the database into the event controller
   void _loadEvents() {
-    for (var event in eventDatabase.events) {
+    db.loadEvents();
+
+    List<Event> events = db.getEventList();
+    for (var event in events) {
       DateTime startDateTime = DateTime(
         event.date.year,
         event.date.month,
@@ -48,6 +58,10 @@ class _CalendarViewState extends State<CalendarView> {
         endTime: endDateTime,
       ));
     }
+  }
+
+  void _saveEvents(){
+    db.saveEvents();
   }
 
   void changeCalendarType(CalendarType newType) {
@@ -121,7 +135,7 @@ class _CalendarViewState extends State<CalendarView> {
             // Navigate and add event
             await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: eventDatabase)), // Pass eventDatabase
+              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)), // Pass eventDatabase
             );
             _loadEvents(); // Reload events after adding a new one
           },
@@ -182,7 +196,7 @@ class _CalendarViewState extends State<CalendarView> {
             // Navigate and add event
             await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: eventDatabase)), // Pass eventDatabase
+              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)), // Pass eventDatabase
             );
             _loadEvents(); // Reload events after adding a new one
           },
