@@ -49,4 +49,15 @@ class EventDatabase {
     }
     return theEvent;
   }
+
+
+  List<Event> getEventsByDate(DateTime date) {
+    final events = _eventBox.get('eventBox', defaultValue: []) as List<Event>;
+
+    final eventsOnDate = events.where((event) => event.date == date).toList();
+
+    print('Events on $date: $eventsOnDate');
+
+    return eventsOnDate;
+  }
 }

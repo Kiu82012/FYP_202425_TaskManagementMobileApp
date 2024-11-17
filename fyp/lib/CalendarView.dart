@@ -1,9 +1,11 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:hive/hive.dart';
 import 'AddEvent.dart';
 import 'Event.dart';
 import 'EventDatabase.dart'; // Import your EventDatabase
+import 'package:intl/intl.dart';
 
 enum CalendarType { week, month }
 
@@ -60,6 +62,22 @@ class _CalendarViewState extends State<CalendarView> {
     }
   }
 
+  List<Event> _loadEventsOnDate(DateTime selectedDate) {
+    db.loadEvents();
+
+    List<Event> events = db.getEventList();
+    List<Event> selectedEvents = events.where((event) =>
+    event.date.year == selectedDate.year &&
+        event.date.month == selectedDate.month &&
+        event.date.day == selectedDate.day
+    ).toList();
+    selectedEvents.forEach((event) {
+      print("${event.name} - ${DateFormat.Hm().format(event.date)}");
+    });
+
+    return selectedEvents;
+  }
+
   void _saveEvents(){
     db.saveEvents();
   }
@@ -110,13 +128,30 @@ class _CalendarViewState extends State<CalendarView> {
           startDay: WeekDays.sunday,
           cellAspectRatio: 0.65,
           showWeekTileBorder: true,
-          onCellTap: (events, date) {
+          onCellTap: (events, date) async {
+            List<Event> selectedEvents = _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text("Selected Date"),
-                  content: Text("You selected: ${date}"),
+                  title: Text("Events on ${date.day}/${date.month}:"),
+                  content: Container(
+                    width: double.maxFinite,
+                    height: 200,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: selectedEvents.length,
+                      itemBuilder: (context, index) {
+                        Event event = selectedEvents[index]; // Move this line here
+                        return Container(
+                          height: 50,
+                          child: ListTile(
+                            title: Text("${event.name} - ${DateFormat.Hm().format(event.date)}"),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                   actions: <Widget>[
                     TextButton(
                       child: Text('Close'),
