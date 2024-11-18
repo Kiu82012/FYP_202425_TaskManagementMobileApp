@@ -13,6 +13,7 @@ void main() async {
   //open 2 boxes for separated database
   await Hive.openBox('mybox');
 
+  Hive.registerAdapter(TimeOfDayAdapter());
   Hive.registerAdapter(EventAdapter());
 
   await Hive.openBox('eventBox');

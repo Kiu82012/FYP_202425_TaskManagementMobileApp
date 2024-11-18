@@ -5,7 +5,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'Event.dart';
 
 class EventDatabase {
-  List<Event> _events = [];
+
+  static List<Event> _events = [];
 
   final _eventBox = Hive.box('eventBox');
 
@@ -27,6 +28,9 @@ class EventDatabase {
 
   // save event into database
   void saveEvents(){
+    for (Event event in _events){
+      print("Saving events: ${event.name}"); // Print the events being saved
+    }
     _eventBox.put('eventBox', _events);
     print("events are saved");
   }
@@ -34,7 +38,12 @@ class EventDatabase {
   // load events from database
   void loadEvents(){
     if (_eventBox.get('eventBox') != null){
-      _events = _eventBox.get('eventBox');
+      _events = (_eventBox.get('eventBox') as List).map((e) => e as Event).toList();
+
+      for (Event event in _events){
+        print("Loading events: ${event.name}"); // Print the events being loaded
+      }
+
       print("events are loaded");
     } else{
       _events = [];
