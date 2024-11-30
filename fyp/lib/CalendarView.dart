@@ -57,8 +57,7 @@ class _CalendarViewState extends State<CalendarView> {
         title: event.name,
         date: event.date,
         startTime: startDateTime,
-        endTime: endDateTime,
-      ));
+        endTime: endDateTime,));
     }
   }
 
@@ -125,6 +124,7 @@ class _CalendarViewState extends State<CalendarView> {
           ],
         ),
         body: MonthView(
+          controller: eventController,
           startDay: WeekDays.sunday,
           cellAspectRatio: 0.65,
           showWeekTileBorder: true,
@@ -202,10 +202,14 @@ class _CalendarViewState extends State<CalendarView> {
           ],
         ),
         body: WeekView(
-          heightPerMinute: 0.9,
+          controller: eventController,
+          showLiveTimeLineInAllDays: false,
+          heightPerMinute: 1,
           startDay: WeekDays.sunday,
-          startHour: 6,
-          endHour: 23,
+          startHour: 0,
+          endHour: 24,
+          minDay: DateTime(1990),
+          maxDay: DateTime(2070),
           onEventTap: (events, date) { // Modified to handle event taps
             showDialog(
               context: context,
