@@ -134,7 +134,25 @@ class _CalendarViewState extends State<CalendarView> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text("Events on ${date.day}/${date.month}:"),
+                  title: Row(
+                    children: [
+                      Text("Events on ${date.day}/${date.month}:"),
+                      SizedBox(width: 50),  // Add spacing between title and FloatingActionButton
+                      FloatingActionButton(
+                        onPressed: () async {
+                          // Add your FloatingActionButton functionality here
+                          // For example, you can add a new event
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)),
+                          );
+                          _loadEvents(); // Reload events after adding a new one
+                        },
+                        backgroundColor: Colors.lightBlue,
+                        child: Icon(Icons.add, color: Colors.white),
+                      ),
+                    ],
+                  ),
                   content: Container(
                     width: double.maxFinite,
                     height: 200,
@@ -142,11 +160,42 @@ class _CalendarViewState extends State<CalendarView> {
                       padding: const EdgeInsets.all(8),
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
-                        Event event = selectedEvents[index]; // Move this line here
+                        Event event = selectedEvents[index];
                         return Container(
                           height: 50,
-                          child: ListTile(
-                            title: Text("${event.name} - ${DateFormat.Hm().format(event.date)}"),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Event Details"),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Event Name: ${event.name}"),
+                                        Text("Event Time: ${DateFormat.Hm().format(event.date)}"),
+
+                                      ],
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('Close'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Text("${event.name} - ${DateFormat.Hm().format(event.date)}"),
                           ),
                         );
                       },
