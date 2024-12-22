@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fyp/CalendarView.dart';
+import 'package:fyp/StringFuncs.dart';
 import 'Event.dart';
 import 'EventDatabase.dart';
 
@@ -14,8 +16,8 @@ class AddEvent extends StatefulWidget {
 class _AddEventState extends State<AddEvent> {
   final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
-  DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  DateTime? _selectedDate = SelectedDate.date;
+  TimeOfDay? _selectedTime = TimeOfDay(hour: 12, minute: 0);
 
   @override
   void dispose() {
@@ -70,6 +72,9 @@ class _AddEventState extends State<AddEvent> {
 
   @override
   Widget build(BuildContext context) {
+
+    List<String> date = _selectedDate!.toLocal().toString().split(' ')[0].split('-');// 0 is YYYY,  1 is MM, 2 is DD
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Event'),
@@ -94,30 +99,71 @@ class _AddEventState extends State<AddEvent> {
               Row(
                 children: <Widget>[
                   Expanded(
+                    flex: 1,
                     child: Text(
-                      _selectedDate == null
-                          ? 'Select Date'
-                          : 'Date: ${_selectedDate!.toLocal()}'.split(' ')[0],
+                      "Date: ",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                  ElevatedButton(
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      _selectedDate == null ?
+                      'Not selected' : '${date[2].trimCharLeft("0")}/${date[1].trimCharLeft("0")}/${date[0]}', // rearranged date format into DD/MM/YYYY
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
                     onPressed: () => _selectDate(context),
-                    child: Text('Choose Date'),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                    ),
+                    icon: const Icon(Icons.calendar_month),
+                    label: Text("select"),
                   ),
                 ],
               ),
               Row(
                 children: <Widget>[
                   Expanded(
+                    flex: 1,
                     child: Text(
-                      _selectedTime == null
-                          ? 'Select Time'
-                          : 'Time: ${_selectedTime!.format(context)}',
+                      "Time: ",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                  ElevatedButton(
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      _selectedTime == null ?
+                      'Not selected' : '${_selectedTime!.format(context)}',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 24,
+
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
                     onPressed: () => _selectTime(context),
-                    child: Text('Choose Time'),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                    ),
+                    icon: const Icon(Icons.watch),
+                    label: Text("select"),
                   ),
                 ],
               ),

@@ -9,6 +9,10 @@ import 'package:intl/intl.dart';
 
 enum CalendarType { week, month }
 
+class SelectedDate{
+  static DateTime date = DateTime.now();
+}
+
 class CalendarView extends StatefulWidget {
   const CalendarView({super.key});
 
@@ -137,9 +141,12 @@ class _CalendarViewState extends State<CalendarView> {
                   title: Row(
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
-                      SizedBox(width: 50),  // Add spacing between title and FloatingActionButton
+                      SizedBox(width: 45),  // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
+
+                          SelectedDate.date = date; // update the selected date time, note that this must run before popping add event page.
+
                           // Add your FloatingActionButton functionality here
                           // For example, you can add a new event
                           await Navigator.push(
@@ -281,6 +288,7 @@ class _CalendarViewState extends State<CalendarView> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
+            SelectedDate.date = DateTime.now(); // update the selected date time to now, as users are usually looking at today's week
             // Navigate and add event
             await Navigator.push(
               context,
