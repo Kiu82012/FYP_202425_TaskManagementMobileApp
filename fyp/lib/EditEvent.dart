@@ -4,20 +4,36 @@ import 'package:fyp/StringFuncs.dart';
 import 'Event.dart';
 import 'EventDatabase.dart';
 
-class AddEvent extends StatefulWidget {
+class EditEvent extends StatefulWidget {
   final EventDatabase eventDatabase;
+  final Event selectedEvent;
 
-  AddEvent({required this.eventDatabase});
+  EditEvent({required this.eventDatabase, required this.selectedEvent});
 
   @override
-  _AddEventState createState() => _AddEventState();
+  _EditEventState createState() => _EditEventState();
 }
 
-class _AddEventState extends State<AddEvent> {
+class _EditEventState extends State<EditEvent> {
   final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
-  DateTime? _selectedDate = SelectedDate.date;
-  TimeOfDay? _selectedTime = TimeOfDay(hour: 12, minute: 0);
+
+  Event oldEvent = Event(name: "default", date: DateTime.now());
+
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+  String _selectedName = "";
+
+  @override
+  void initState() {
+    super.initState();
+
+    oldEvent = widget.selectedEvent;
+
+    _selectedDate = widget.selectedEvent.date;
+    _selectedTime = widget.selectedEvent.time;
+    _selectedName = widget.selectedEvent.name;
+  }
 
   @override
   void dispose() {
@@ -53,14 +69,18 @@ class _AddEventState extends State<AddEvent> {
 
   void _updateEvent() {
     if (_formKey.currentState!.validate()) {
+      EventDatabase db = EventDatabase();
 
+      // remove old event
+      db.deleteEvent(oldEvent);
+      
+      // add new event to replace old one
       Event newEvent = Event(
         name: _eventNameController.text,
         date: _selectedDate!,
-        time: _selectedTime!,
+        time: _selectedTime,
       );
-
-      EventDatabase db = EventDatabase();
+      
       db.addEvent(newEvent);
 
       _eventNameController.clear();
@@ -70,15 +90,61 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
+  void _deleteEvent(){
+    if (_formKey.currentState!.validate()) {
+      EventDatabase db = EventDatabase();
+      db.deleteEvent(oldEvent);
+
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
+    // rearrange date format
     List<String> date = _selectedDate!.toLocal().toString().split(' ')[0].split('-');// 0 is YYYY,  1 is MM, 2 is DD
+
+    // set default value of text
+    _eventNameController.text = _selectedName;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Event'),
+        title: Text('Edit Event'),
         elevation: 100,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_forever),
+            color: Colors.red,
+            tooltip: 'Delete',
+            onPressed: () {
+              showDialog(
+                  context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Delete Event"),
+                    content: Text("Are you sure you want to delete this event?"),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Yes'),
+                        onPressed: () {
+                          _deleteEvent();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('No'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -169,9 +235,16 @@ class _AddEventState extends State<AddEvent> {
                 ],
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _updateEvent,
-                child: Text('Save events'),
+              Row(
+                children: <Widget>[
+                Expanded(
+                    flex: 1,
+                    child:ElevatedButton(
+                      onPressed: _updateEvent,
+                      child: Text('Save changes'),
+                    ),
+                  ),
+              ],
               ),
             ],
           ),

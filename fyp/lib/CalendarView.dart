@@ -1,11 +1,12 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
-import 'package:hive/hive.dart';
 import 'AddEvent.dart';
+import 'EditEvent.dart';
 import 'Event.dart';
 import 'EventDatabase.dart'; // Import your EventDatabase
 import 'package:intl/intl.dart';
+import 'TimeOfDayFunc.dart';
 
 enum CalendarType { week, month }
 
@@ -75,7 +76,7 @@ class _CalendarViewState extends State<CalendarView> {
         event.date.day == selectedDate.day
     ).toList();
     selectedEvents.forEach((event) {
-      print("${event.name} - ${DateFormat.Hm().format(event.date)}");
+      print("${event.name} - ${event.time?.Format()}");
     });
 
     return selectedEvents;
@@ -176,34 +177,15 @@ class _CalendarViewState extends State<CalendarView> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: TextButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("Event Details"),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Event Name: ${event.name}"),
-                                        Text("Event Time: ${DateFormat.Hm().format(event.date)}"),
-
-                                      ],
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: Text('Close'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
+                            onPressed: () async {
+                              // Navigate and add event
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EditEvent(eventDatabase: db, selectedEvent: event,)), // Pass eventDatabase, event chosen
                               );
+                              _loadEvents(); // Reload events after adding a new one
                             },
-                            child: Text("${event.name} - ${DateFormat.Hm().format(event.date)}"),
+                            child: Text("${event.name} - ${event.time?.Format()}"),
                           ),
                         );
                       },
