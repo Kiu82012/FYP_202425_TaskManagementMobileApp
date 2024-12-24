@@ -78,6 +78,7 @@ class _AddEventState extends State<AddEvent> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Event'),
+        elevation: 100,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

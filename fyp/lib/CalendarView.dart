@@ -117,6 +117,7 @@ class _CalendarViewState extends State<CalendarView> {
       home: Scaffold(
         appBar: AppBar(
           title: Text("Calendar"),
+          elevation: 100,
           actions: [
             IconButton(
               icon: Icon(Icons.change_circle_rounded),
@@ -230,8 +231,8 @@ class _CalendarViewState extends State<CalendarView> {
             );
             _loadEvents(); // Reload events after adding a new one
           },
-          backgroundColor: Colors.lightBlue,
-          child: Icon(Icons.add, color: Colors.white),
+
+          child: Icon(Icons.add),
         ),
       ),
     );
@@ -247,6 +248,7 @@ class _CalendarViewState extends State<CalendarView> {
       home: Scaffold(
         appBar: AppBar(
           title: Text("Calendar"),
+          elevation: 100,
           actions: [
             IconButton(
               icon: Icon(Icons.change_circle_rounded),
@@ -296,8 +298,8 @@ class _CalendarViewState extends State<CalendarView> {
             );
             _loadEvents(); // Reload events after adding a new one
           },
-          backgroundColor: Colors.lightBlue,
-          child: Icon(Icons.add, color: Colors.white),
+
+          child: Icon(Icons.add),
         ),
       ),
     );
