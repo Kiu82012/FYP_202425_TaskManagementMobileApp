@@ -16,7 +16,7 @@ class Todolist extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+      padding: const EdgeInsets.only(left: 10, right: 10, top: 30),
       child: Slidable(
         endActionPane: ActionPane(
             motion: StretchMotion(),
@@ -25,7 +25,7 @@ class Todolist extends StatelessWidget {
                 onPressed: deleteFunction,
               icon: Icons.delete,
               backgroundColor: Colors.red.shade300,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(25),
               )
             ],
         ),
@@ -46,8 +46,8 @@ class Todolist extends StatelessWidget {
             ),
           ]),
           decoration: BoxDecoration(
-              color: Colors.lightBlueAccent,
-              borderRadius: BorderRadius.circular(12)),
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(25)),
         ),
       ),
     );
