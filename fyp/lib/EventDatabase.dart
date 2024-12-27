@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -16,8 +15,9 @@ class EventDatabase {
     saveEvents();
   }
 
-  void deleteEvent(int index) {
-    _events.removeAt(index);
+  void deleteEvent(Event event) {
+    _events.remove(event);
+    print("events are deleted");
     saveEvents();
   }
 
@@ -41,7 +41,7 @@ class EventDatabase {
       _events = (_eventBox.get('eventBox') as List).map((e) => e as Event).toList();
 
       for (Event event in _events){
-        print("Loading events: ${event.name}"); // Print the events being loaded
+        print("Loading events: ${event.name}: ${event.date}:${event.time}"); // Print the events being loaded
       }
 
       print("events are loaded");
