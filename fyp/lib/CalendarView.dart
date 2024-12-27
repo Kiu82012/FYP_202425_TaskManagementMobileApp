@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
@@ -42,12 +43,17 @@ class _CalendarViewState extends State<CalendarView> {
     _saveEvents;();
   }
 
+  List<CalendarEventData> eventDataList = [];
+
   // Load events from the database into the event controller
   void _loadEvents() {
+    eventController.removeAll(eventDataList);
     db.loadEvents();
 
     List<Event> events = db.getEventList();
     for (var event in events) {
+
+      // ===================== Event ================================ \\
       DateTime startDateTime = DateTime(
         event.date.year,
         event.date.month,
@@ -58,12 +64,19 @@ class _CalendarViewState extends State<CalendarView> {
 
       DateTime endDateTime = startDateTime.add(Duration(hours: 1));
 
-      eventController.add(CalendarEventData(
-        title: event.name,
-        date: event.date,
-        startTime: startDateTime,
-        endTime: endDateTime,));
+      CalendarEventData data = CalendarEventData(
+          title: event.name,
+          date: event.date,
+          startTime: startDateTime,
+          endTime: endDateTime);
+
+      // ========================================================== \\
+
+      eventController.add(data);
+      eventDataList.add(data);
     }
+
+    print("Reloaded Calendar");
   }
 
   List<Event> _loadEventsOnDate(DateTime selectedDate) {
@@ -151,6 +164,7 @@ class _CalendarViewState extends State<CalendarView> {
 
                           // Add your FloatingActionButton functionality here
                           // For example, you can add a new event
+                          Navigator.of(context).pop();
                           await Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)),
@@ -179,6 +193,7 @@ class _CalendarViewState extends State<CalendarView> {
                           child: TextButton(
                             onPressed: () async {
                               // Navigate and add event
+                              Navigator.of(context).pop();
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => EditEvent(eventDatabase: db, selectedEvent: event,)), // Pass eventDatabase, event chosen
