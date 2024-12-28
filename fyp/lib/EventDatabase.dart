@@ -1,3 +1,5 @@
+import 'package:fyp/CalendarView.dart';
+import 'package:fyp/TimeOfDayFunc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -41,7 +43,7 @@ class EventDatabase {
       _events = (_eventBox.get('eventBox') as List).map((e) => e as Event).toList();
 
       for (Event event in _events){
-        print("Loading events: ${event.name}: ${event.date}:${event.time}"); // Print the events being loaded
+        print("Loading events: ${event.name}: ${event.date}:${event.startTime?.Format()} D:${event.duration?.inMinutes.toString()}"); // Print the events being loaded
       }
 
       print("events are loaded");

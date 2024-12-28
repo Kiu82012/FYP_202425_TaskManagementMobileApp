@@ -58,8 +58,8 @@ class _CalendarViewState extends State<CalendarView> {
         event.date.year,
         event.date.month,
         event.date.day,
-        event.time?.hour ?? 0,
-        event.time?.minute ?? 0,
+        event.startTime?.hour ?? 0,
+        event.startTime?.minute ?? 0,
       );
 
       DateTime endDateTime = startDateTime.add(Duration(hours: 1));
@@ -89,7 +89,7 @@ class _CalendarViewState extends State<CalendarView> {
         event.date.day == selectedDate.day
     ).toList();
     selectedEvents.forEach((event) {
-      print("${event.name} - ${event.time?.Format()}");
+      print("${event.name} - ${event.startTime?.Format()}");
     });
 
     return selectedEvents;
@@ -200,7 +200,7 @@ class _CalendarViewState extends State<CalendarView> {
                               );
                               _loadEvents(); // Reload events after adding a new one
                             },
-                            child: Text("${event.name} - ${event.time?.Format()}"),
+                            child: Text("${event.name} - ${event.startTime?.Format()}"),
                           ),
                         );
                       },

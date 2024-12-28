@@ -12,7 +12,14 @@ class Event {
   final DateTime date;
 
   @HiveField(2)
-  final TimeOfDay? time;
+  final TimeOfDay? startTime;
 
-  Event({required this.name, required this.date, this.time});
+  @HiveField(3)
+  final TimeOfDay? endTime;
+
+  @HiveField(4)
+  final Duration? duration;
+
+
+  Event({required this.name, required this.date, this.startTime, this.endTime, this.duration});
 }

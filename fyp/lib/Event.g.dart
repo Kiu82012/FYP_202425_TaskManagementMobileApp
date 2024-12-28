@@ -19,20 +19,26 @@ class EventAdapter extends TypeAdapter<Event> {
     return Event(
       name: fields[0] as String,
       date: fields[1] as DateTime,
-      time: fields[2] as TimeOfDay?,
+      startTime: fields[2] as TimeOfDay?,
+      endTime: fields[3] as TimeOfDay?,
+      duration: fields[4] as Duration?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Event obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.date)
       ..writeByte(2)
-      ..write(obj.time);
+      ..write(obj.startTime)
+      ..writeByte(3)
+      ..write(obj.endTime)
+      ..writeByte(4)
+      ..write(obj.duration);
   }
 
   @override

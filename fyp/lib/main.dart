@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/CalendarView.dart';
+import 'package:fyp/DurationAdapter.dart';
 import 'package:fyp/Event.dart';
 import 'package:fyp/ToDoDataBase.dart';
 import 'package:fyp/ToDoListView.dart';
@@ -15,6 +16,7 @@ void main() async {
   await Hive.openBox('mybox');
 
   Hive.registerAdapter(TimeOfDayAdapter());
+  Hive.registerAdapter(DurationAdapter());
   Hive.registerAdapter(EventAdapter());
 
   await Hive.openBox('eventBox');

@@ -31,7 +31,7 @@ class _EditEventState extends State<EditEvent> {
     oldEvent = widget.selectedEvent;
 
     _selectedDate = widget.selectedEvent.date;
-    _selectedTime = widget.selectedEvent.time;
+    _selectedTime = widget.selectedEvent.startTime;
     _selectedName = widget.selectedEvent.name;
   }
 
@@ -78,7 +78,7 @@ class _EditEventState extends State<EditEvent> {
       Event newEvent = Event(
         name: _eventNameController.text,
         date: _selectedDate!,
-        time: _selectedTime,
+        startTime: _selectedTime,
       );
       
       db.addEvent(newEvent);
