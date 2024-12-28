@@ -237,9 +237,16 @@ class _AddEventState extends State<AddEvent> {
                 ],
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _updateEvent,
-                child: Text('Save events'),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child:ElevatedButton(
+                      onPressed: _updateEvent,
+                      child: Text('Save changes'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

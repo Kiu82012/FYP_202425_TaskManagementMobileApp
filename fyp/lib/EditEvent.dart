@@ -1,5 +1,7 @@
+import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp/CalendarView.dart';
+import 'package:fyp/DurationFunc.dart';
 import 'package:fyp/StringFuncs.dart';
 import 'Event.dart';
 import 'EventDatabase.dart';
@@ -20,9 +22,11 @@ class _EditEventState extends State<EditEvent> {
 
   Event oldEvent = Event(name: "default", date: DateTime.now());
 
-  DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
   String _selectedName = "";
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedStartTime;
+  TimeOfDay? _selectedEndTime;
+  Duration? _selectedDuration;
 
   @override
   void initState() {
@@ -30,9 +34,11 @@ class _EditEventState extends State<EditEvent> {
 
     oldEvent = widget.selectedEvent;
 
-    _selectedDate = widget.selectedEvent.date;
-    _selectedTime = widget.selectedEvent.startTime;
     _selectedName = widget.selectedEvent.name;
+    _selectedDate = widget.selectedEvent.date;
+    _selectedStartTime = widget.selectedEvent.startTime;
+    _selectedEndTime = widget.selectedEvent.endTime;
+    _selectedDuration = widget.selectedEvent.duration;
   }
 
   @override
@@ -60,9 +66,21 @@ class _EditEventState extends State<EditEvent> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null && picked != _selectedStartTime) {
       setState(() {
-        _selectedTime = picked;
+        _selectedStartTime = picked;
+      });
+    }
+  }
+
+  Future<void> _selectDuration(BuildContext context) async {
+    final Duration? picked = await showDurationPicker(
+        context: context,
+        initialTime: Duration(hours: 0)
+    );
+    if (picked != null && picked != _selectedDuration) {
+      setState(() {
+        _selectedDuration = picked;
       });
     }
   }
@@ -78,14 +96,14 @@ class _EditEventState extends State<EditEvent> {
       Event newEvent = Event(
         name: _eventNameController.text,
         date: _selectedDate!,
-        startTime: _selectedTime,
+        startTime: _selectedStartTime,
       );
       
       db.addEvent(newEvent);
 
       _eventNameController.clear();
       _selectedDate = null;
-      _selectedTime = null;
+      _selectedStartTime = null;
       Navigator.of(context).pop();
     }
   }
@@ -163,6 +181,9 @@ class _EditEventState extends State<EditEvent> {
                 },
               ),
               SizedBox(height: 16.0),
+              //=======================================\\
+              //===============Date====================\\
+              //=======================================\\
               Row(
                 children: <Widget>[
                   Expanded(
@@ -198,6 +219,10 @@ class _EditEventState extends State<EditEvent> {
                   ),
                 ],
               ),
+
+              //=======================================\\
+              //===============Time====================\\
+              //=======================================\\
               Row(
                 children: <Widget>[
                   Expanded(
@@ -215,8 +240,8 @@ class _EditEventState extends State<EditEvent> {
                     flex: 3,
                     child: Text(
                       textAlign: TextAlign.center,
-                      _selectedTime == null ?
-                      'Not selected' : '${_selectedTime!.format(context)}',
+                      _selectedStartTime == null ?
+                      'Not selected' : '${_selectedStartTime!.format(context)}',
                       style: TextStyle(
                         color: Colors.blueGrey,
                         fontSize: 24,
@@ -234,17 +259,57 @@ class _EditEventState extends State<EditEvent> {
                   ),
                 ],
               ),
+
+              //=======================================\\
+              //===============Duration================\\
+              //=======================================\\
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      "Duration: ",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      _selectedDuration == null ?
+                      'Not selected' : '${_selectedDuration?.Format()}',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 24,
+
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _selectDuration(context),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                    ),
+                    icon: const Icon(Icons.punch_clock),
+                    label: Text("select"),
+                  ),
+                ],
+              ),
               SizedBox(height: 16.0),
               Row(
                 children: <Widget>[
-                Expanded(
+                  Expanded(
                     flex: 1,
                     child:ElevatedButton(
                       onPressed: _updateEvent,
                       child: Text('Save changes'),
                     ),
                   ),
-              ],
+                ],
               ),
             ],
           ),
