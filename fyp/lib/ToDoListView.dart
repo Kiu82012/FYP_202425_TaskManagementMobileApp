@@ -82,7 +82,7 @@ class _ToDoListView extends State<ToDoListView> {
 //save new task
   void saveNewTask(){
     setState(() {
-      db.toDoList.add([_controller.text,false]);
+      db.toDoList.insert(0,[_controller.text,false]);
       _searchToDo();
       _controller.clear();
     });

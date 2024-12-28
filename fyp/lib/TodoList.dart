@@ -30,7 +30,7 @@ class Todolist extends StatelessWidget {
             ],
         ),
         child: Container(
-          padding: EdgeInsets.all(24),
+          padding: EdgeInsets.all(15),
           child: Row(children: [
             Checkbox(
               value: taskCompleted,
