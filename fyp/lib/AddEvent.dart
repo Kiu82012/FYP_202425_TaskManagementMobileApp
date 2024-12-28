@@ -124,7 +124,7 @@ class _AddEventState extends State<AddEvent> {
               Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
+                    flex: 3,
                     child: Text(
                       "Date: ",
                       textAlign: TextAlign.right,
@@ -135,7 +135,7 @@ class _AddEventState extends State<AddEvent> {
                     ),
                   ),
                   Expanded(
-                    flex: 3,
+                    flex: 6,
                     child: Text(
                       textAlign: TextAlign.center,
                       _selectedDate == null ?
@@ -163,7 +163,7 @@ class _AddEventState extends State<AddEvent> {
               Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
+                    flex: 3,
                     child: Text(
                       "Time: ",
                       textAlign: TextAlign.right,
@@ -174,7 +174,7 @@ class _AddEventState extends State<AddEvent> {
                     ),
                   ),
                   Expanded(
-                    flex: 3,
+                    flex: 6,
                     child: Text(
                       textAlign: TextAlign.center,
                       _selectedStartTime == null ?
@@ -203,7 +203,7 @@ class _AddEventState extends State<AddEvent> {
               Row(
                 children: <Widget>[
                   Expanded(
-                    flex: 1,
+                    flex: 3,
                     child: Text(
                       "Duration: ",
                       textAlign: TextAlign.right,
@@ -214,7 +214,7 @@ class _AddEventState extends State<AddEvent> {
                     ),
                   ),
                   Expanded(
-                    flex: 3,
+                    flex: 6,
                     child: Text(
                       textAlign: TextAlign.center,
                       _selectedDuration == null ?
