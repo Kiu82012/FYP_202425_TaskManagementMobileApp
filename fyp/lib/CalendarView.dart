@@ -62,7 +62,13 @@ class _CalendarViewState extends State<CalendarView> {
         event.startTime?.minute ?? 0,
       );
 
-      DateTime endDateTime = startDateTime.add(Duration(hours: 1));
+      late DateTime endDateTime;
+      if (event.duration!=null){
+        Duration d = Duration(seconds: event.duration!.inSeconds);
+        endDateTime = startDateTime.add(d);
+      } else{
+        endDateTime = startDateTime.add(Duration(hours: 1));
+      }
 
       CalendarEventData data = CalendarEventData(
           title: event.name,
@@ -266,12 +272,64 @@ class _CalendarViewState extends State<CalendarView> {
           minDay: DateTime(1990),
           maxDay: DateTime(2070),
           onEventTap: (events, date) { // Modified to handle event taps
+            List<Event> selectedEvents = _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text("Events"),
-                  content: Text("Events on: ${date}"),
+                  title: Row(
+                    children: [
+                      Text("Events on ${date.day}/${date.month}:"),
+                      SizedBox(width: 45),  // Add spacing between title and FloatingActionButton
+                      FloatingActionButton(
+                        onPressed: () async {
+
+                          SelectedDate.date = date; // update the selected date time, note that this must run before popping add event page.
+
+                          // Add your FloatingActionButton functionality here
+                          // For example, you can add a new event
+                          Navigator.of(context).pop();
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)),
+                          );
+                          _loadEvents(); // Reload events after adding a new one
+                        },
+                        backgroundColor: Colors.lightBlue,
+                        child: Icon(Icons.add, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  content: Container(
+                    width: double.maxFinite,
+                    height: 200,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: selectedEvents.length,
+                      itemBuilder: (context, index) {
+                        Event event = selectedEvents[index];
+                        return Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: TextButton(
+                            onPressed: () async {
+                              // Navigate and add event
+                              Navigator.of(context).pop();
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EditEvent(eventDatabase: db, selectedEvent: event,)), // Pass eventDatabase, event chosen
+                              );
+                              _loadEvents(); // Reload events after adding a new one
+                            },
+                            child: Text("${event.name} - ${event.startTime?.Format()}"),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                   actions: <Widget>[
                     TextButton(
                       child: Text('Close'),
