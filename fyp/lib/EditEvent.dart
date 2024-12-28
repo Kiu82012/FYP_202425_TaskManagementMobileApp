@@ -97,6 +97,8 @@ class _EditEventState extends State<EditEvent> {
         name: _eventNameController.text,
         date: _selectedDate!,
         startTime: _selectedStartTime,
+        endTime: _selectedEndTime,
+        duration: _selectedDuration,
       );
       
       db.addEvent(newEvent);
