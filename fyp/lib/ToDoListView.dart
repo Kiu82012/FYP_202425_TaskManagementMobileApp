@@ -56,28 +56,26 @@ class _ToDoListView extends State<ToDoListView> {
   //text controller
   final _controller=TextEditingController();
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      _pageController.jumpToPage(index);
+    });
+  }
+
   //checkbox was tapped
   void checkBoxChanged(bool? value, int index) {
     setState(() {
       _foundToDo[index][1] = !_foundToDo[index][1];
-
       // Find and update in db.toDoList based on task name
       int originalIndex = db.toDoList.indexWhere(
               (originalTodo) => originalTodo[0] == _foundToDo[index][0]);
       if (originalIndex != -1) {
         db.toDoList[originalIndex][1] = _foundToDo[index][1];
       }
-
       _searchToDo(); // Rebuild _foundToDo to reflect changes
     });
     db.updateDataBase();
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _pageController.jumpToPage(index);
-    });
   }
 //save new task
   void saveNewTask(){
@@ -99,9 +97,7 @@ class _ToDoListView extends State<ToDoListView> {
         onCancel: ()=> Navigator.of(context).pop(),);
     });
   }
-
   //delete a task
-
   void deleteTask(int index) {
     setState(() {
       // Find and remove from db.toDoList based on task name
@@ -110,7 +106,6 @@ class _ToDoListView extends State<ToDoListView> {
       if (originalIndex != -1) {
         db.toDoList.removeAt(originalIndex);
       }
-
       _searchToDo(); // Rebuild _foundToDo after deleting
     });
     db.updateDataBase();
@@ -158,7 +153,7 @@ class _ToDoListView extends State<ToDoListView> {
               child: Align(
                 alignment: Alignment.centerLeft, // Align to the left
                 child: Text(
-                  "All ToDos",
+                  "All To Dos",
                   style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                 ),
               ),
