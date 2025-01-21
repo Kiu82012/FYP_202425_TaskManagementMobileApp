@@ -22,4 +22,14 @@ class Event {
 
 
   Event({required this.name, required this.date, this.startTime, this.endTime, this.duration});
+
+  factory Event.fromJson(Map<String, dynamic> json) {
+    return Event(
+      name: json['name'],
+      date: json['date'],
+      startTime: json['startTime'],
+      endTime: json['endTime'],
+      duration: json['duration'],
+    );
+  }
 }

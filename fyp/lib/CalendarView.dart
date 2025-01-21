@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'AddEvent.dart';
+import 'ConfirmView.dart';
 import 'EditEvent.dart';
 import 'Event.dart';
 import 'EventDatabase.dart'; // Import your EventDatabase
@@ -146,6 +147,20 @@ class _CalendarViewState extends State<CalendarView> {
                 log("Change to week calendar");
               },
             ),
+
+            /// TEST /////// TEST /////// TEST ////
+            IconButton(
+              icon: Icon(Icons.directions_run),
+              onPressed: ()
+              async {
+                // Navigate to confirmation view
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ConfirmView(events: db.getEventList())), // Pass eventDatabase
+                );
+              },
+            ),
+            /// TEST /////// TEST /////// TEST ////
           ],
         ),
         body: MonthView(
