@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/ConfirmListViewItem.dart';
+import 'package:fyp/EventDatabase.dart';
 import 'Event.dart';
 
 class ConfirmView extends StatelessWidget {
-  final List<Event> events; // Add a field for events
+  final List<Event> events; // events to be confirmed
 
   const ConfirmView({super.key, required this.events}); // Constructor
+
+  void AddEventsIntoDatabaseAfterConfirmation() {
+
+    EventDatabase db = EventDatabase();
+
+    // update database
+    for(Event event in events){
+      db.addEvent(event);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +64,4 @@ class ConfirmView extends StatelessWidget {
       ),
     );
   }
-}
-
-void AddEventsIntoDatabaseAfterConfirmation() {
-  // Your logic to add events into the database goes here.
-  print("Events added to the database.");
 }

@@ -153,11 +153,13 @@ class _CalendarViewState extends State<CalendarView> {
               icon: Icon(Icons.directions_run),
               onPressed: ()
               async {
-                // Navigate to confirmation view
+                // Navigate and add event
+                Navigator.of(context).pop();
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ConfirmView(events: db.getEventList())), // Pass eventDatabase
+                  MaterialPageRoute(builder: (context) => ConfirmView(events: db.getEventList())) // Pass eventDatabase, event chosen
                 );
+                _loadEvents(); // Reload events after adding a new one
               },
             ),
             /// TEST /////// TEST /////// TEST ////
