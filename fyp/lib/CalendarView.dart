@@ -154,7 +154,6 @@ class _CalendarViewState extends State<CalendarView> {
               onPressed: ()
               async {
                 // Navigate and add event
-                Navigator.of(context).pop();
                 await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ConfirmView(events: db.getEventList())) // Pass eventDatabase, event chosen

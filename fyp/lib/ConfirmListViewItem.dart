@@ -6,13 +6,13 @@ import 'Event.dart';
 
 class ConfirmListViewItem extends StatelessWidget {
   final Event event;
+  final Function(Event) onRemove; // Callback to remove an event
 
-  const ConfirmListViewItem({super.key, required this.event});
+  const ConfirmListViewItem({super.key, required this.event, required this.onRemove}); // Constructor
 
   @override
   Widget build(BuildContext context) {
-
-    List<String> date = event.date.toString().split(' ')[0].split('-');// 0 is YYYY,  1 is MM, 2 is DD
+    List<String> date = event.date.toString().split(' ')[0].split('-'); // 0 is YYYY,  1 is MM, 2 is DD
 
     return GestureDetector(
       onTap: () => _showDeleteConfirmationDialog(context), // Show dialog on tap
@@ -59,7 +59,10 @@ class ConfirmListViewItem extends StatelessWidget {
             TextButton(
               child: Text('Delete', style: TextStyle(color: Colors.red)),
               onPressed: () {
-                // Add your deletion logic here
+
+                // Remove unwanted event from the list
+                onRemove(event); // Call the remove callback
+
                 Navigator.of(context).pop(); // Close the dialog
               },
             ),
