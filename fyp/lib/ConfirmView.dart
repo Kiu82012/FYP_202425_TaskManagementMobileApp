@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/ConfirmListViewItem.dart';
-
-import 'Event.dart';  // Import the list view item
+import 'Event.dart';
 
 class ConfirmView extends StatelessWidget {
   final List<Event> events; // Add a field for events
@@ -15,10 +14,26 @@ class ConfirmView extends StatelessWidget {
         title: Text('Confirmation'),
         actions: [
           IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.red,
+            icon: Icon(Icons.check_rounded),
+            color: Colors.green,
             onPressed: () {
-              Navigator.pop(context); // Go back to the previous view
+              // Call the function to add events to the database
+              AddEventsIntoDatabaseAfterConfirmation();
+
+              // Show the confirmation snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('You have added the events successfully!'),
+                  duration: Duration(seconds: 2), // Duration for the snackbar
+                  behavior: SnackBarBehavior.floating, // Makes it float
+                  margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40), // Adjust position
+                ),
+              );
+
+              // Optionally navigate back after some delay
+              Future.delayed(Duration(seconds: 2), () {
+                Navigator.pop(context); // Go back to the previous view
+              });
             },
           ),
         ],
@@ -38,4 +53,9 @@ class ConfirmView extends StatelessWidget {
       ),
     );
   }
+}
+
+void AddEventsIntoDatabaseAfterConfirmation() {
+  // Your logic to add events into the database goes here.
+  print("Events added to the database.");
 }
