@@ -1,3 +1,7 @@
+import 'package:fyp/AddEvent.dart';
+import 'package:fyp/CalendarView.dart';
+import 'package:fyp/DurationFunc.dart';
+
 import 'Event.dart';
 import 'dart:convert';
 
@@ -8,17 +12,17 @@ class EventJsonUtils{
   String eventToJson(List<Event> eventList){
 
     // The list of map that will contain all event data from the parameter
-    List<Map<String, dynamic>> eventMapList = [];
+    List<Map<String, String?>> eventMapList = [];
 
     // Input every data from the parameter into the list of map
     for(Event event in eventList){
       eventMapList.add(
         {
-          'duration' : event.duration,
           'name' : event.name,
-          'startTime' : event.startTime,
-          'endTime' : event.endTime,
-          'date' : event.date,
+          'date' : "${event.date.year}:${event.date.month}:${event.date.day}",
+          'startTime' : "${event.startTime?.hour.toString()}:${event.startTime?.minute.toString()}",
+          'endTime' : "${event.endTime?.hour.toString()}:${event.endTime?.minute.toString()}",
+          'duration' : event.duration?.inHours.toString(),
         }
       );
     }
