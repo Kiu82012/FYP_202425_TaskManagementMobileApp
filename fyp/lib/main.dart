@@ -7,9 +7,10 @@ import 'package:fyp/ToDoListView.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 void main() async {
-
   // Initial Database
   await Hive.initFlutter();
   //open 2 boxes for separated database
@@ -66,7 +67,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        children:  [
+        children: [
           Center(
             child: CalendarView(),
           ),
@@ -86,7 +87,6 @@ class _HomeState extends State<Home> {
             icon: Icon(Icons.calendar_today),
             label: 'Calendar',
           ),
-
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist),
             label: 'To-Do-List',

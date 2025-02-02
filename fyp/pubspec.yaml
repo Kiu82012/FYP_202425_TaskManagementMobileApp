@@ -41,6 +41,8 @@ dependencies:
   intl: ^0.17.0
   duration_picker: "^1.0.0"
   json_annotation: ^4.0.1
+  speech_to_text: ^7.0.0
+  avatar_glow: ^3.0.1
 
 dev_dependencies:
   flutter_test:
