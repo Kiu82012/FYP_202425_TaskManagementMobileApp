@@ -9,6 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:fyp/CameraView.dart';
 
 void main() async {
   // Initial Database
@@ -74,6 +75,9 @@ class _HomeState extends State<Home> {
           Center(
             child: ToDoListView(),
           ),
+          Center(
+            child: CameraView(),
+          )
         ],
         onPageChanged: (index) {
           setState(() {
@@ -90,6 +94,10 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist),
             label: 'To-Do-List',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera),
+            label: 'Camera',
           ),
         ],
         currentIndex: _selectedIndex,
