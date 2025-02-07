@@ -10,6 +10,10 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:fyp/CameraView.dart';
+import 'package:flutter/material.dart';
+
+import 'aichatroomnew.dart';
+import 'callGeminiAI.dart';
 
 void main() async {
   // Initial Database
@@ -22,8 +26,9 @@ void main() async {
   Hive.registerAdapter(EventAdapter());
 
   await Hive.openBox('eventBox');
-
+  initGemini();
   runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -77,7 +82,10 @@ class _HomeState extends State<Home> {
           ),
           Center(
             child: CameraView(),
-          )
+          ),
+          Center(
+              child: AIChatRoom()
+          ),
         ],
         onPageChanged: (index) {
           setState(() {
@@ -98,6 +106,10 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.camera),
             label: 'Camera',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat', // Add a new item for AIChatroom
           ),
         ],
         currentIndex: _selectedIndex,
