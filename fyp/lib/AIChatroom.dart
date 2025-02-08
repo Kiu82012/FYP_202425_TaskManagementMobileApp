@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gemini_flutter/gemini_flutter.dart';
-import 'package:gemini_flutter/models/TextOnlyResponseModel.dart';
-import 'callGeminiAI.dart';
+
 
 
 class AIChatroom extends StatefulWidget {
@@ -36,8 +34,8 @@ class _AIChatroomState extends State<AIChatroom> {
               itemBuilder: (context, index) {
                 final message = messages[index];
                 return ListTile(
-                  title: Text(message['text']!),
-                  subtitle: Text(message['role']!),
+                  title: Text(message['role']!),
+                  subtitle: Text(message['text']!),
                   leading: message['role'] == 'user'
                       ? const Icon(Icons.person)
                       : const Icon(Icons.android),

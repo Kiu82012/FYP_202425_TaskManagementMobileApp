@@ -11,9 +11,7 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:fyp/CameraView.dart';
 import 'package:flutter/material.dart';
-
-import 'aichatroomnew.dart';
-import 'callGeminiAI.dart';
+import 'AIChatroom.dart';
 
 void main() async {
   // Initial Database
@@ -25,8 +23,8 @@ void main() async {
   Hive.registerAdapter(DurationAdapter());
   Hive.registerAdapter(EventAdapter());
 
+
   await Hive.openBox('eventBox');
-  initGemini();
   runApp(const MyApp());
 
 }
@@ -84,7 +82,7 @@ class _HomeState extends State<Home> {
             child: CameraView(),
           ),
           Center(
-              child: AIChatRoom()
+              child: AIChatroom()
           ),
         ],
         onPageChanged: (index) {
