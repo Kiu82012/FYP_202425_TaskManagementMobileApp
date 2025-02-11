@@ -12,6 +12,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:fyp/CameraView.dart';
 import 'package:flutter/material.dart';
 import 'AIChatroom.dart';
+import 'AIHelper.dart';
 
 void main() async {
   // Initial Database

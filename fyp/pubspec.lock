@@ -22,14 +22,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.7.0"
-  anthropic_dart:
-    dependency: "direct main"
-    description:
-      name: anthropic_dart
-      sha256: "17bbb2aabd4450f4edde2a0df63aa0f3ae67fc3ef8f6eab09f2cefc1ec02ed9e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   args:
     dependency: transitive
     description:
@@ -154,10 +146,10 @@ packages:
     dependency: transitive
     description:
       name: camera_avfoundation
-      sha256: "823436c028c27222da6e82c8b644acf00bd2adb69bda78bc8ae479bb8e21f43a"
+      sha256: "49cc403dc2aec719cc70ba23419c932f1245d990e43f3c8336014b895751454a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.18+2"
+    version: "0.9.18+4"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -190,14 +182,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
-  claude_dart_flutter:
-    dependency: "direct main"
-    description:
-      name: claude_dart_flutter
-      sha256: "52c2ede2b724cc902fd8d6176d4cbc04aa4fd23cea73c9cda4da0f7f1279a7d5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0+1"
   clock:
     dependency: transitive
     description:
@@ -262,22 +246,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.7"
-  dio:
-    dependency: transitive
-    description:
-      name: dio
-      sha256: "253a18bbd4851fecba42f7343a1df3a9a4c1d31a2c1b37e221086b4fa8c8dbc9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.8.0+1"
-  dio_web_adapter:
-    dependency: transitive
-    description:
-      name: dio_web_adapter
-      sha256: e485c7a39ff2b384fa1d7e09b4e25f755804de8384358049124830b04fc4f93a
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   duration_picker:
     dependency: "direct main"
     description:
@@ -335,10 +303,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_markdown
-      sha256: b3ff1ef5fb3924ee02b4d38b974ffae3969d50603e68787684ee9dd45f6f144a
+      sha256: e7bbc718adc9476aa14cfddc1ef048d2e21e4e8f18311aaac723266db9f9e7b5
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.6+1"
+    version: "0.7.6+2"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
