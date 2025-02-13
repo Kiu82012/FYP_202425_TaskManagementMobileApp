@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CameraView extends StatefulWidget {
   const CameraView({super.key});
@@ -49,6 +50,17 @@ class _CameraViewState extends State<CameraView> {
       setState(() => _isLoading = false);
       _showError('Camera initialization failed');
     }
+  }
+
+  void _returnToInitialView() {
+    if (_controller != null) {
+      _controller!.dispose();
+      _controller = null;
+    }
+    setState(() {
+      _isCameraActive = false;
+      _initializeControllerFuture = null;
+    });
   }
 
   /// Captures photo and provides user feedback
@@ -111,10 +123,34 @@ class _CameraViewState extends State<CameraView> {
     super.dispose();
   }
 
+  Future<void> _selectFromGallery() async {
+    try {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedFile != null) {
+        print('Selected image path: ${pickedFile.path}');
+        _showSuccess('Image selected from gallery');
+        // You can add your image handling logic here
+      }
+    } catch (e) {
+      _showError('Failed to select image: ${e.toString()}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Camera')),
+      appBar: AppBar(
+        title: const Text('Camera Function'),
+        leading: _isCameraActive
+            ? IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _returnToInitialView,
+        )
+            : null,
+      ),
       body: Stack(
         children: [
           // Main content (camera preview or button)
@@ -153,10 +189,27 @@ class _CameraViewState extends State<CameraView> {
     // Initial state - show camera activation button
     if (!_isCameraActive) {
       return Center(
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.camera),
-          label: const Text('Open Camera'),
-          onPressed: _initializeCamera,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.camera),
+              label: const Text('Open Camera'),
+              onPressed: _initializeCamera,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.photo_library),
+              label: const Text('Select from Gallery'),
+              onPressed: _selectFromGallery,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+            ),
+          ],
         ),
       );
     }
