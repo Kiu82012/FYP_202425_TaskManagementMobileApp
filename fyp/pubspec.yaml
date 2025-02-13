@@ -49,8 +49,7 @@ dependencies:
   flutter_markdown: ^0.7.6+1
   google_generative_ai: ^0.4.6
   url_launcher: ^6.3.1
-  claude_dart_flutter: ^1.0.0+1
-  anthropic_dart: ^1.0.1
+
 
 dev_dependencies:
   flutter_test:
