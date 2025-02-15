@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -13,98 +14,104 @@ class _SpeechToTextState extends State<SpeechText> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _wordSpoken = "";
-  bool _isButtonPressed = false;
+  bool _isListening = false; // Track listening state
 
+  @override
   void initState() {
     super.initState();
-    initSpeech();
+    _initSpeech();
   }
 
-  void initSpeech() async {
+  void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
     setState(() {});
   }
 
   void _startListening() async {
-    await _speechToText.listen(
+    if (!_isListening) { // Prevent multiple starts
+      setState(() {
+        _isListening = true;
+      });
+      await _speechToText.listen(
         onResult: _onSpeechResult,
-        pauseFor: const Duration(seconds: 99999),
-        listenFor: const Duration(minutes: 1));
-    setState(() {});
+        listenFor: const Duration(days: 1), // Extended duration if needed
+        pauseFor: const Duration(seconds: 5),
+        partialResults: true, // Show partial results as the user speaks
+        cancelOnError: true,
+      );
+    }
   }
 
   void _stopListening() async {
-    await _speechToText.stop();
-    setState(() {});
+    if (_isListening) { // Prevent multiple stops
+      setState(() {
+        _isListening = false;
+      });
+      await _speechToText.stop();
+    }
   }
 
-  void _onSpeechResult(result) {
+  void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
-      _wordSpoken = "${result.recognizedWords}";
+      _wordSpoken = result.recognizedWords;
     });
+  }
+
+  @override
+  void dispose() {
+    _speechToText.stop();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Speech Demo'),
+        title: const Text('Speech Demo'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Text(
-                _speechToText.isListening
-                    ? 'listening...'
+                _isListening // Use _isListening to update the text
+                    ? 'Listening...'
                     : _speechEnabled
-                        ? 'Tap the microphone to start listening...'
-                        : 'Speech not available',
-                style: TextStyle(fontSize: 20.0),
+                    ? 'Tap the microphone to start listening'
+                    : 'Speech not available',
+                style: const TextStyle(fontSize: 20.0),
               ),
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(16),
-                child: Text(
-                    // If listening is active show the recognized words
-                    _wordSpoken),
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Text(_wordSpoken),
+                ),
               ),
             ),
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: GestureDetector(
-        onTapDown: (details) {
-          setState(() => _isButtonPressed = true);
-          _startListening();
-        },
-        onTapUp: (details) {
-          setState(() => _isButtonPressed = false);
-          _stopListening();
-        },
-        onTapCancel: () {
-          setState(() => _isButtonPressed = false);
-          _stopListening();
-        },
-        child: Ink(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _isButtonPressed ? Colors.blueAccent : Colors.blue,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Icon(
-              _isButtonPressed ? Icons.mic : Icons.mic_off,
-              size: 36,
-              color: Colors.white,
-            ),
-          ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _toggleListening, // Toggle between listening and not listening
+        tooltip: 'Listen',
+        child: Icon(
+          _isListening ? Icons.mic : Icons.mic_off, // Show correct icon
+          size: 36,
         ),
       ),
     );
+  }
+
+  void _toggleListening() {
+    if (_isListening) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
   }
 }
