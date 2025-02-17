@@ -108,12 +108,12 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
-            label: 'Chat', // Add a new item for AIChatroom
+            label: 'Chat',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black,
+        selectedItemColor: Theme.of(context).colorScheme.primary,  // Use theme's primary color
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),  // Adaptive color
         onTap: _onItemTapped,
       ),
     );
