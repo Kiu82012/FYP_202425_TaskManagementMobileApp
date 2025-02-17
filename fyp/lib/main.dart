@@ -103,7 +103,7 @@ class _HomeState extends State<Home> {
             label: 'To-Do-List',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
+            icon: Icon(Icons.camera_alt),
             label: 'Camera',
           ),
           BottomNavigationBarItem(

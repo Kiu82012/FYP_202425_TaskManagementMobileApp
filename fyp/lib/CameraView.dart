@@ -193,7 +193,7 @@ class _CameraViewState extends State<CameraView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton.icon(
-              icon: const Icon(Icons.camera),
+              icon: const Icon(Icons.camera_alt),
               label: const Text('Open Camera'),
               onPressed: _initializeCamera,
               style: ElevatedButton.styleFrom(
