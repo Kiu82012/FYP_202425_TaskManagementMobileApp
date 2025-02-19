@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/DurationFunc.dart';
+import 'package:fyp/EditListEvent.dart';
 import 'package:fyp/StringFuncs.dart';
 
 import 'Event.dart';
 
 class ConfirmListViewItem extends StatelessWidget {
   final Event event;
+  final List<Event> eventList;
+  final Function(Event) onAdd; // Callback to add an event
   final Function(Event) onRemove; // Callback to remove an event
 
-  const ConfirmListViewItem({super.key, required this.event, required this.onRemove}); // Constructor
+  const ConfirmListViewItem({super.key, required this.event, required this.eventList,required this.onAdd, required this.onRemove}); // Constructor
 
   @override
   Widget build(BuildContext context) {
@@ -40,34 +43,7 @@ class ConfirmListViewItem extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Remove wrong event'),
-          content: Row(
-            children: [
-              Icon(Icons.call_received, color: Colors.red), // Warning icon
-              SizedBox(width: 10),
-              Flexible(child: Text('Are you sure you don\'t want this event?')),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
-              onPressed: () {
-
-                // Remove unwanted event from the list
-                onRemove(event); // Call the remove callback
-
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
+        return EditListEvent(selectedEvent: event, eventList: eventList,onAdd: onAdd, onRemove: onRemove,);
       },
     );
   }

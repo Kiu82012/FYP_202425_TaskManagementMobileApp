@@ -4,7 +4,7 @@ import 'package:fyp/EventDatabase.dart';
 import 'Event.dart';
 
 class ConfirmView extends StatefulWidget {
-  final List<Event> events; // events to be confirmed
+  final List<Event> events; // Events to be confirmed
 
   const ConfirmView({super.key, required this.events}); // Constructor
 
@@ -19,8 +19,6 @@ class _ConfirmViewState extends State<ConfirmView> {
   void initState() {
     super.initState();
     _events = List.from(widget.events); // Create a mutable copy
-
-    // Remove the null check here
   }
 
   void _removeEvent(Event event) {
@@ -29,7 +27,7 @@ class _ConfirmViewState extends State<ConfirmView> {
     });
   }
 
-  void AddEventsIntoDatabaseAfterConfirmation() async {
+  void AddEventsIntoDatabaseAfterConfirmation(){
     EventDatabase db = EventDatabase();
 
     // Update database
@@ -56,23 +54,21 @@ class _ConfirmViewState extends State<ConfirmView> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('You have added the events successfully!'),
-                    duration: Duration(seconds: 2), // Duration for the snackbar
+                    duration: Duration(seconds: 2),
                     behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40), // Adjust position
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   ),
                 );
 
-                // Navigate back after some delay
-                await Future.delayed(Duration(seconds: 2));
-                Navigator.pop(context); // Go back to the previous view
+                Navigator.pop(context);
               } else {
                 // Show the confirmation snackbar
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('There is no event to confirm.'),
-                    duration: Duration(seconds: 2), // Duration for the snackbar
+                    duration: Duration(seconds: 2),
                     behavior: SnackBarBehavior.floating,
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40), // Adjust position
+                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                   ),
                 );
               }
@@ -91,8 +87,18 @@ class _ConfirmViewState extends State<ConfirmView> {
           itemBuilder: (context, index) {
             return ConfirmListViewItem(
               event: _events[index],
-              onRemove: _removeEvent, // Pass the remove callback
-            ); // Create list view item
+              eventList: _events,
+              onAdd: (event){
+                setState(() {
+                  _events.add(event);
+                });
+              },
+              onRemove: (event) {
+                setState(() {
+                  _events.remove(event); // Update the list and trigger a rebuild
+                });
+              },
+            );
           },
         ),
       ),

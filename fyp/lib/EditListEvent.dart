@@ -1,0 +1,324 @@
+import 'package:duration_picker/duration_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:fyp/CalendarView.dart';
+import 'package:fyp/DurationFunc.dart';
+import 'package:fyp/StringFuncs.dart';
+import 'Event.dart';
+import 'EventDatabase.dart';
+
+class EditListEvent extends StatefulWidget {
+  final Event selectedEvent;
+  final List<Event> eventList;
+  final Function(Event) onAdd;
+  final Function(Event) onRemove;
+
+  EditListEvent({required this.selectedEvent, required this.eventList, required this.onAdd, required this.onRemove});
+
+  @override
+  _EditListEventState createState() => _EditListEventState();
+}
+
+class _EditListEventState extends State<EditListEvent> {
+  final _formKey = GlobalKey<FormState>();
+  final _eventNameController = TextEditingController();
+
+  late Function(Event) onRemove;
+  late Function(Event) onAdd;
+
+  List<Event> eventList = [];
+
+  Event oldEvent = Event(name: "default", date: DateTime.now());
+
+  String _selectedName = "";
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedStartTime;
+  TimeOfDay? _selectedEndTime;
+  Duration? _selectedDuration;
+
+  @override
+  void initState() {
+    super.initState();
+
+    onRemove = widget.onRemove;
+    onAdd = widget.onAdd;
+
+    eventList = widget.eventList;
+
+    oldEvent = widget.selectedEvent;
+
+    _selectedName = widget.selectedEvent.name;
+    _selectedDate = widget.selectedEvent.date;
+    _selectedStartTime = widget.selectedEvent.startTime;
+    _selectedEndTime = widget.selectedEvent.endTime;
+    _selectedDuration = widget.selectedEvent.duration;
+  }
+
+  @override
+  void dispose() {
+    _eventNameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != _selectedStartTime) {
+      setState(() {
+        _selectedStartTime = picked;
+      });
+    }
+  }
+
+  Future<void> _selectDuration(BuildContext context) async {
+    final Duration? picked = await showDurationPicker(
+        context: context,
+        initialTime: Duration(hours: 0)
+    );
+    if (picked != null && picked != _selectedDuration) {
+      setState(() {
+        _selectedDuration = picked;
+      });
+    }
+  }
+
+  void _updateEvent() {
+    setState(() {
+      if (_formKey.currentState!.validate()) {
+        // remove old event
+        eventList.remove(oldEvent);
+
+        // add new event to replace old one
+        Event newEvent = Event(
+          name: _eventNameController.text,
+          date: _selectedDate!,
+          startTime: _selectedStartTime,
+          endTime: _selectedEndTime,
+          duration: _selectedDuration,
+        );
+
+        onAdd(newEvent);
+
+        Navigator.of(context).pop();
+        }
+      }
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    // rearrange date format
+    List<String> date = _selectedDate!.toLocal().toString().split(' ')[0].split('-');// 0 is YYYY,  1 is MM, 2 is DD
+
+    // set default value of text
+    _eventNameController.text = _selectedName;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Event'),
+        elevation: 100,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_forever),
+            color: Colors.red,
+            tooltip: 'Delete',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Delete Event"),
+                    content: Text("Are you sure you want to delete this event?"),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Yes'),
+                        onPressed: () {
+                          onRemove(oldEvent);
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text('No'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                controller: _eventNameController,
+                decoration: InputDecoration(labelText: 'Event Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an event name';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              //=======================================\\
+              //===============Date====================\\
+              //=======================================\\
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      "Date: ",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 6,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      _selectedDate == null ?
+                      'Not selected' : '${date[2].trimCharLeft("0")}/${date[1].trimCharLeft("0")}/${date[0]}', // rearranged date format into DD/MM/YYYY
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _selectDate(context),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                    ),
+                    icon: const Icon(Icons.calendar_month),
+                    label: Text("select"),
+                  ),
+                ],
+              ),
+
+              //=======================================\\
+              //===============Time====================\\
+              //=======================================\\
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      "Time: ",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 6,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      _selectedStartTime == null ?
+                      'Not selected' : '${_selectedStartTime!.format(context)}',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 24,
+
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _selectTime(context),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                    ),
+                    icon: const Icon(Icons.watch),
+                    label: Text("select"),
+                  ),
+                ],
+              ),
+
+              //=======================================\\
+              //===============Duration================\\
+              //=======================================\\
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      "Duration: ",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 6,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      _selectedDuration == null ?
+                      'Not selected' : '${_selectedDuration?.Format()}',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 24,
+
+                      ),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _selectDuration(context),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                    ),
+                    icon: const Icon(Icons.punch_clock),
+                    label: Text("select"),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child:ElevatedButton(
+                      onPressed: _updateEvent,
+                      child: Text('Save changes'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
