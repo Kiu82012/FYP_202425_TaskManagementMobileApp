@@ -1,7 +1,8 @@
-import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+import 'package:speech_to_text_continuous/speech_recognition_result.dart';
+import 'package:speech_to_text_continuous/speech_to_text.dart';
+
 
 class SpeechText extends StatefulWidget {
   const SpeechText({super.key});
@@ -15,6 +16,8 @@ class _SpeechToTextState extends State<SpeechText> {
   bool _speechEnabled = false;
   String _wordSpoken = "";
   bool _isListening = false; // Track listening state
+  String _lastRecognized = "";
+
 
   @override
   void initState() {
@@ -31,13 +34,15 @@ class _SpeechToTextState extends State<SpeechText> {
     if (!_isListening) { // Prevent multiple starts
       setState(() {
         _isListening = true;
+        _wordSpoken=" ";
       });
+      print("start");
       await _speechToText.listen(
+        listenMode: ListenMode.dictation,
         onResult: _onSpeechResult,
-        listenFor: const Duration(days: 1), // Extended duration if needed
-        pauseFor: const Duration(seconds: 5),
-        partialResults: true, // Show partial results as the user speaks
-        cancelOnError: true,
+        listenFor: const Duration(minutes:5), // Extended duration if needed
+        pauseFor: const Duration(seconds: 20),
+
       );
     }
   }
@@ -47,13 +52,18 @@ class _SpeechToTextState extends State<SpeechText> {
       setState(() {
         _isListening = false;
       });
+      print("stop");
       await _speechToText.stop();
     }
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
-      _wordSpoken = result.recognizedWords;
+      String newWords = result.recognizedWords.replaceFirst(_lastRecognized, "").trim();
+      if (newWords.isNotEmpty) {
+        _wordSpoken += " " + newWords; // Append only new words
+      }
+      _lastRecognized = result.recognizedWords; // Update last processed text
     });
   }
 
@@ -78,9 +88,9 @@ class _SpeechToTextState extends State<SpeechText> {
               child: Text(
                 _isListening // Use _isListening to update the text
                     ? 'Listening...'
-                    : _speechEnabled
+                    : (_speechEnabled
                     ? 'Tap the microphone to start listening'
-                    : 'Speech not available',
+                    : 'Speech not available'),
                 style: const TextStyle(fontSize: 20.0),
               ),
             ),

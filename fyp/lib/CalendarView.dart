@@ -9,8 +9,6 @@ import 'Event.dart';
 import 'EventDatabase.dart'; // Import your EventDatabase
 import 'package:intl/intl.dart';
 import 'TimeOfDayFunc.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 import 'speech_to_text.dart';
 
 enum CalendarType { week, month }

@@ -7,8 +7,7 @@ import 'package:fyp/ToDoListView.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
+
 import 'package:fyp/CameraView.dart';
 import 'package:flutter/material.dart';
 import 'AIChatroom.dart';
