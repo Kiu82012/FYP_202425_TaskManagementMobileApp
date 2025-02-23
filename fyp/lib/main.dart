@@ -8,8 +8,12 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_flutter/adapters.dart';
 
-void main() async {
+import 'package:fyp/CameraView.dart';
+import 'package:flutter/material.dart';
+import 'AIChatroom.dart';
+import 'AIHelper.dart';
 
+void main() async {
   // Initial Database
   await Hive.initFlutter();
   //open 2 boxes for separated database
@@ -19,9 +23,10 @@ void main() async {
   Hive.registerAdapter(DurationAdapter());
   Hive.registerAdapter(EventAdapter());
 
-  await Hive.openBox('eventBox');
 
+  await Hive.openBox('eventBox');
   runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -66,12 +71,18 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        children:  [
+        children: [
           Center(
             child: CalendarView(),
           ),
           Center(
             child: ToDoListView(),
+          ),
+          Center(
+            child: CameraView(),
+          ),
+          Center(
+              child: AIChatroom()
           ),
         ],
         onPageChanged: (index) {
@@ -86,15 +97,22 @@ class _HomeState extends State<Home> {
             icon: Icon(Icons.calendar_today),
             label: 'Calendar',
           ),
-
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist),
             label: 'To-Do-List',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            label: 'Camera',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
+          ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black,
+        selectedItemColor: Theme.of(context).colorScheme.primary,  // Use theme's primary color
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),  // Adaptive color
         onTap: _onItemTapped,
       ),
     );

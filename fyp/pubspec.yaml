@@ -28,6 +28,9 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  path_provider: ^2.1.1  # Replace with the latest version
+  camera: ^0.10.0+1
+  image_picker: ^1.1.2 #here may need change to 1.0.4
   flutter:
     sdk: flutter
 
@@ -40,7 +43,19 @@ dependencies:
   flutter_slidable: ^3.1.1
   intl: ^0.17.0
   duration_picker: "^1.0.0"
-  json_annotation: ^4.0.1
+  json_annotation: ^4.9.0
+
+  js: ^0.6.7
+
+  pedantic: ^1.11.1
+  speech_to_text_macos: ^1.1.0
+  speech_to_text_platform_interface: ^2.3.0
+  speech_to_text_continuous: ^6.5.4
+  avatar_glow: ^3.0.1
+  flutter_markdown: ^0.7.6+1
+  google_generative_ai: ^0.4.6
+  url_launcher: ^6.3.1
+
 
 dev_dependencies:
   flutter_test:

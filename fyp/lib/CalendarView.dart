@@ -9,10 +9,11 @@ import 'Event.dart';
 import 'EventDatabase.dart'; // Import your EventDatabase
 import 'package:intl/intl.dart';
 import 'TimeOfDayFunc.dart';
+import 'speech_to_text.dart';
 
 enum CalendarType { week, month }
 
-class SelectedDate{
+class SelectedDate {
   static DateTime date = DateTime.now();
 }
 
@@ -39,9 +40,10 @@ class _CalendarViewState extends State<CalendarView> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
-    _saveEvents;();
+    _saveEvents;
+    ();
   }
 
   List<CalendarEventData> eventDataList = [];
@@ -53,7 +55,6 @@ class _CalendarViewState extends State<CalendarView> {
 
     List<Event> events = db.getEventList();
     for (var event in events) {
-
       // ===================== Event ================================ \\
       DateTime startDateTime = DateTime(
         event.date.year,
@@ -64,10 +65,10 @@ class _CalendarViewState extends State<CalendarView> {
       );
 
       late DateTime endDateTime;
-      if (event.duration!=null){
+      if (event.duration != null) {
         Duration d = Duration(seconds: event.duration!.inSeconds);
         endDateTime = startDateTime.add(d);
-      } else{
+      } else {
         endDateTime = startDateTime.add(Duration(hours: 1));
       }
 
@@ -90,11 +91,12 @@ class _CalendarViewState extends State<CalendarView> {
     db.loadEvents();
 
     List<Event> events = db.getEventList();
-    List<Event> selectedEvents = events.where((event) =>
-    event.date.year == selectedDate.year &&
-        event.date.month == selectedDate.month &&
-        event.date.day == selectedDate.day
-    ).toList();
+    List<Event> selectedEvents = events
+        .where((event) =>
+            event.date.year == selectedDate.year &&
+            event.date.month == selectedDate.month &&
+            event.date.day == selectedDate.day)
+        .toList();
     selectedEvents.forEach((event) {
       print("${event.name} - ${event.startTime?.Format()}");
     });
@@ -102,7 +104,7 @@ class _CalendarViewState extends State<CalendarView> {
     return selectedEvents;
   }
 
-  void _saveEvents(){
+  void _saveEvents() {
     db.saveEvents();
   }
 
@@ -129,7 +131,7 @@ class _CalendarViewState extends State<CalendarView> {
   }
 
   //==============================================================================================================================
-  //==Month View=================================================================================================================
+  //==Month View==================================================================================================================
   //==============================================================================================================================
 
   MaterialApp buildMonthViewApp() {
@@ -151,16 +153,19 @@ class _CalendarViewState extends State<CalendarView> {
             /// TEST /////// TEST /////// TEST ////
             IconButton(
               icon: Icon(Icons.directions_run),
-              onPressed: ()
-              async {
+              onPressed: () async {
                 // Navigate and add event
                 await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ConfirmView(events: db.getEventList())) // Pass eventDatabase, event chosen
-                );
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ConfirmView(
+                            events: db
+                                .getEventList())) // Pass eventDatabase, event chosen
+                    );
                 _loadEvents(); // Reload events after adding a new one
               },
             ),
+
             /// TEST /////// TEST /////// TEST ////
           ],
         ),
@@ -170,7 +175,8 @@ class _CalendarViewState extends State<CalendarView> {
           cellAspectRatio: 0.65,
           showWeekTileBorder: true,
           onCellTap: (events, date) async {
-            List<Event> selectedEvents = _loadEventsOnDate(date); // Load events for the selected date
+            List<Event> selectedEvents =
+                _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -178,18 +184,22 @@ class _CalendarViewState extends State<CalendarView> {
                   title: Row(
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
-                      SizedBox(width: 45),  // Add spacing between title and FloatingActionButton
+                      SizedBox(
+                          width:
+                              45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
-
-                          SelectedDate.date = date; // update the selected date time, note that this must run before popping add event page.
+                          SelectedDate.date =
+                              date; // update the selected date time, note that this must run before popping add event page.
 
                           // Add your FloatingActionButton functionality here
                           // For example, you can add a new event
                           Navigator.of(context).pop();
                           await Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AddEvent(eventDatabase: db)),
                           );
                           _loadEvents(); // Reload events after adding a new one
                         },
@@ -218,11 +228,16 @@ class _CalendarViewState extends State<CalendarView> {
                               Navigator.of(context).pop();
                               await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => EditEvent(eventDatabase: db, selectedEvent: event,)), // Pass eventDatabase, event chosen
+                                MaterialPageRoute(
+                                    builder: (context) => EditEvent(
+                                          eventDatabase: db,
+                                          selectedEvent: event,
+                                        )), // Pass eventDatabase, event chosen
                               );
                               _loadEvents(); // Reload events after adding a new one
                             },
-                            child: Text("${event.name} - ${event.startTime?.Format()}"),
+                            child: Text(
+                                "${event.name} - ${event.startTime?.Format()}"),
                           ),
                         );
                       },
@@ -241,17 +256,38 @@ class _CalendarViewState extends State<CalendarView> {
             );
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            // Navigate and add event
-            await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)), // Pass eventDatabase
-            );
-            _loadEvents(); // Reload events after adding a new one
-          },
-
-          child: Icon(Icons.add),
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(left: 30),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SpeechText()),
+                  );
+                },
+                child: Icon(Icons.mic),
+              ),
+              Expanded(child: Container()),
+              FloatingActionButton(
+                onPressed: () async {
+                  SelectedDate.date = DateTime
+                      .now(); // update the selected date time to now, as users are usually looking at today's week
+                  // Navigate and add event
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AddEvent(eventDatabase: db)), // Pass eventDatabase
+                  );
+                  _loadEvents(); // Reload events after adding a new one
+                },
+                child: Icon(Icons.add),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -287,8 +323,10 @@ class _CalendarViewState extends State<CalendarView> {
           endHour: 24,
           minDay: DateTime(1990),
           maxDay: DateTime(2070),
-          onEventTap: (events, date) { // Modified to handle event taps
-            List<Event> selectedEvents = _loadEventsOnDate(date); // Load events for the selected date
+          onEventTap: (events, date) {
+            // Modified to handle event taps
+            List<Event> selectedEvents =
+                _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -296,18 +334,22 @@ class _CalendarViewState extends State<CalendarView> {
                   title: Row(
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
-                      SizedBox(width: 45),  // Add spacing between title and FloatingActionButton
+                      SizedBox(
+                          width:
+                              45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
-
-                          SelectedDate.date = date; // update the selected date time, note that this must run before popping add event page.
+                          SelectedDate.date =
+                              date; // update the selected date time, note that this must run before popping add event page.
 
                           // Add your FloatingActionButton functionality here
                           // For example, you can add a new event
                           Navigator.of(context).pop();
                           await Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)),
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AddEvent(eventDatabase: db)),
                           );
                           _loadEvents(); // Reload events after adding a new one
                         },
@@ -336,11 +378,16 @@ class _CalendarViewState extends State<CalendarView> {
                               Navigator.of(context).pop();
                               await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => EditEvent(eventDatabase: db, selectedEvent: event,)), // Pass eventDatabase, event chosen
+                                MaterialPageRoute(
+                                    builder: (context) => EditEvent(
+                                          eventDatabase: db,
+                                          selectedEvent: event,
+                                        )), // Pass eventDatabase, event chosen
                               );
                               _loadEvents(); // Reload events after adding a new one
                             },
-                            child: Text("${event.name} - ${event.startTime?.Format()}"),
+                            child: Text(
+                                "${event.name} - ${event.startTime?.Format()}"),
                           ),
                         );
                       },
@@ -359,18 +406,38 @@ class _CalendarViewState extends State<CalendarView> {
             );
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            SelectedDate.date = DateTime.now(); // update the selected date time to now, as users are usually looking at today's week
-            // Navigate and add event
-            await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)), // Pass eventDatabase
-            );
-            _loadEvents(); // Reload events after adding a new one
-          },
-
-          child: Icon(Icons.add),
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(left: 30),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SpeechText()),
+                  );
+                },
+                child: Icon(Icons.mic),
+              ),
+              Expanded(child: Container()),
+              FloatingActionButton(
+                onPressed: () async {
+                  SelectedDate.date = DateTime
+                      .now(); // update the selected date time to now, as users are usually looking at today's week
+                  // Navigate and add event
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            AddEvent(eventDatabase: db)), // Pass eventDatabase
+                  );
+                  _loadEvents(); // Reload events after adding a new one
+                },
+                child: Icon(Icons.add),
+              ),
+            ],
+          ),
         ),
       ),
     );
