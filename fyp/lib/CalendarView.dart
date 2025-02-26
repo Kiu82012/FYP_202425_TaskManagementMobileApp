@@ -25,6 +25,27 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarViewState extends State<CalendarView> {
+  //==============================================================================================================================
+  //==Replace showDialog with OverlayEntry==================================================================================================================
+  //==============================================================================================================================
+  OverlayEntry? _overlayEntry;
+
+  void _showSpeechOverlay(BuildContext context) {
+    _overlayEntry = OverlayEntry(
+      builder: (context) => SpeechText(),
+    );
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _closeSpeechOverlay() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+  }
+  //==============================================================================================================================
+  //==Replace showDialog with OverlayEntry==================================================================================================================
+  //==============================================================================================================================
   CalendarType type = CalendarType.month;
 
   // Create an EventDatabase instance
@@ -256,19 +277,26 @@ class _CalendarViewState extends State<CalendarView> {
             );
           },
         ),
+        //Speaking button
         floatingActionButton: Padding(
           padding: EdgeInsets.only(left: 30),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SpeechText()),
-                  );
+               GestureDetector(
+                onLongPressStart: (details) {
+                  print("I am speaking");
+                  _showSpeechOverlay(context);
                 },
-                child: Icon(Icons.mic),
+                onLongPressEnd: (details) {
+                  // Close the dialog when the user releases the mic button
+                  print("Stop speaking");
+                  _closeSpeechOverlay();
+                },
+                child: FloatingActionButton(
+                  onPressed: null,
+                  child: Icon(Icons.mic),
+                ),
               ),
               Expanded(child: Container()),
               FloatingActionButton(
@@ -288,7 +316,7 @@ class _CalendarViewState extends State<CalendarView> {
               ),
             ],
           ),
-        ),
+        ), // speaking button
       ),
     );
   }
