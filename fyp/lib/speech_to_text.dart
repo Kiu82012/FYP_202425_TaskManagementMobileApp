@@ -1,27 +1,32 @@
-
 import 'package:flutter/material.dart';
 import 'package:speech_to_text_continuous/speech_recognition_result.dart';
 import 'package:speech_to_text_continuous/speech_to_text.dart';
 
 
 class SpeechText extends StatefulWidget {
-  const SpeechText({super.key});
+  SpeechText({super.key});
+
+  final _SpeechToTextState state = _SpeechToTextState();
 
   @override
-  State<SpeechText> createState() => _SpeechToTextState();
+  State<SpeechText> createState() => state;
+
+  String getWordSpoken(){
+    return state.wordSpoken;
+  }
 }
 
 class _SpeechToTextState extends State<SpeechText> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
-  String _wordSpoken = "";
+  String wordSpoken = "";
   bool _isListening = false; // Track listening state
   String _lastRecognized = "";
-
 
   @override
   void initState() {
     super.initState();
+
     _initSpeech().then((_) {
       if (_speechEnabled) {
         _startListening();
@@ -38,7 +43,7 @@ class _SpeechToTextState extends State<SpeechText> {
     if (!_isListening) { // Prevent multiple starts
       setState(() {
         _isListening = true;
-        _wordSpoken=" ";
+        wordSpoken=" ";
       });
       print("start");
       await _speechToText.listen(
@@ -65,7 +70,7 @@ class _SpeechToTextState extends State<SpeechText> {
     setState(() {
       String newWords = result.recognizedWords.replaceFirst(_lastRecognized, "").trim();
       if (newWords.isNotEmpty) {
-        _wordSpoken += " " + newWords; // Append only new words
+        wordSpoken += " " + newWords; // Append only new words
       }
       _lastRecognized = result.recognizedWords; // Update last processed text
     });
@@ -91,7 +96,7 @@ class _SpeechToTextState extends State<SpeechText> {
               color: _isListening ? Colors.red : Colors.grey,
             ),
             SizedBox(height: 16),
-            Text(_wordSpoken.isNotEmpty ? _wordSpoken : 'start speaking'),
+            Text(wordSpoken.isNotEmpty ? wordSpoken : 'start speaking'),
           ],
         ),
       ),

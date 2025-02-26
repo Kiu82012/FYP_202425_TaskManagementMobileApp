@@ -2,6 +2,8 @@ import 'dart:collection';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:fyp/EventJsonUtils.dart';
+import 'package:fyp/EventNavigator.dart';
 import 'AddEvent.dart';
 import 'ConfirmView.dart';
 import 'EditEvent.dart';
@@ -30,10 +32,18 @@ class _CalendarViewState extends State<CalendarView> {
   //==============================================================================================================================
   OverlayEntry? _overlayEntry;
 
+  String spokenWords = "default";
+
   void _showSpeechOverlay(BuildContext context) {
+
+    SpeechText st = SpeechText();
+
     _overlayEntry = OverlayEntry(
-      builder: (context) => SpeechText(),
+      builder: (context) => st,
     );
+
+    spokenWords = st.getWordSpoken();
+
     Overlay.of(context).insert(_overlayEntry!);
   }
 
@@ -42,7 +52,28 @@ class _CalendarViewState extends State<CalendarView> {
       _overlayEntry!.remove();
       _overlayEntry = null;
     }
+
+    // Open confirm view after this
+    PassRequirementsToAI(context);
   }
+
+  void PassRequirementsToAI(BuildContext context) async {
+    // Generate Event using AI
+    String newEventListJson = await EventNavigator.generateEvent(spokenWords, db);
+
+    // Turn json format into event list
+    EventJsonUtils util = EventJsonUtils();
+    List<Event> newEventList = util.jsonToEvent(newEventListJson);
+
+    // Navigate to ConfirmView and play valorant
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConfirmView(events: newEventList),
+      ),
+    );
+  }
+
   //==============================================================================================================================
   //==Replace showDialog with OverlayEntry==================================================================================================================
   //==============================================================================================================================
@@ -180,8 +211,7 @@ class _CalendarViewState extends State<CalendarView> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ConfirmView(
-                            events: db
-                                .getEventList())) // Pass eventDatabase, event chosen
+                            events: db.getEventList())) // Pass eventDatabase, event chosen
                     );
                 _loadEvents(); // Reload events after adding a new one
               },
@@ -290,6 +320,7 @@ class _CalendarViewState extends State<CalendarView> {
                 },
                 onLongPressEnd: (details) {
                   // Close the dialog when the user releases the mic button
+
                   print("Stop speaking");
                   _closeSpeechOverlay();
                 },
