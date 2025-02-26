@@ -58,13 +58,17 @@ class _CalendarViewState extends State<CalendarView> {
   }
 
   void PassRequirementsToAI(BuildContext context) async {
+    print("Passing Requirements to AI...");
     // Generate Event using AI
     String newEventListJson = await EventNavigator.generateEvent(spokenWords, db);
 
+    print("Converting json into events...");
     // Turn json format into event list
     EventJsonUtils util = EventJsonUtils();
     List<Event> newEventList = util.jsonToEvent(newEventListJson);
 
+
+    print("Listing events into confirm view...");
     // Navigate to ConfirmView and play valorant
     await Navigator.push(
       context,

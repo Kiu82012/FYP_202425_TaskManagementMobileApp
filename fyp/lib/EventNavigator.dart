@@ -6,6 +6,8 @@ class EventNavigator {
   // Static function to generate an event based on a requirement string
   static Future<String> generateEvent(String requirementString, EventDatabase database) async {
 
+    print("Generating event json...");
+
     String eventListJson = EventJsonUtils().eventToJson(database.getEventList());
 
     String prompt = """
@@ -24,6 +26,9 @@ class EventNavigator {
     """;
 
     String newJsonEvent = await AIHelper.getAIResponse(prompt);
+
+    print(newJsonEvent);
+
     return newJsonEvent;
   }
 

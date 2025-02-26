@@ -41,12 +41,33 @@ class EventJsonUtils{
 
   List<Event> jsonToEvent(String eventJson){
 
-    // decode event json into event object
-    var events = jsonDecode(eventJson);
+    String trimmedEventJson = extractJson(eventJson);
 
-    // convert dynamics to a list
-    List<Event> eventList = events.map((eventMap) => Event.fromJson(eventMap)).toList();
+    if (trimmedEventJson.isEmpty){
+      // decode event json into event object
+      var events = jsonDecode(trimmedEventJson);
 
-    return eventList;
+      // convert dynamics to a list
+      List<Event> eventList = events.map((eventMap) => Event.fromJson(eventMap)).toList();
+      return eventList;
+    }
+
+    return [];
+  }
+
+  String extractJson(String input) {
+    // Regular expression to match JSON objects
+    final RegExp jsonRegExp = RegExp(r'({.*?}|[\[.*?\]])', dotAll: true);
+
+    // Find the first match
+    final match = jsonRegExp.firstMatch(input);
+
+    if (match != null) {
+      // Return the matched JSON string
+      return match.group(0)!;
+    } else {
+      // Return an empty string if no JSON is found
+      return "";
+    }
   }
 }
