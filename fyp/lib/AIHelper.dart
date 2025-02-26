@@ -2,7 +2,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 
 class AIHelper {
   static const String _apiKey = 'AIzaSyChwh8mhEpIwXKCwqjJ4uRmFKanYISbw3w'; // Replace with your API key
-  static const String _modelName = 'gemini-pro'; // Use the appropriate model
+  static const String _modelName = 'gemini-1.5-flash-latest'; // Use the appropriate model
 
   static Future<String> getAIResponse(String userMessage) async {
     try {
