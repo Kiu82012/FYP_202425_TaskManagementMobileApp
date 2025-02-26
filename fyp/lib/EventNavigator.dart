@@ -8,20 +8,23 @@ class EventNavigator {
 
     print("Generating event json...");
 
+    String todaysDate = formatDateTime(DateTime.now().toString());
+
     String eventListJson = EventJsonUtils().eventToJson(database.getEventList());
 
     String prompt = """
     
-    Calendar App Knowledge Base 
-    $eventListJson
-    Add new event name base on the photo's details. 
-    ONLY WHEN DATA IS NO SPECIFIED, Input default value name: unknown event, date: today, startTime: 0:0, duration: 1,
+    Calendar App Knowledge Base, DO NOT CHANGE THE DATA FROM THE KNOWLEDGE BASE.
+    YOU SHOULD ONLY REVIEW AND AVOID EVENT TIME OVERLAPPING.
+    This is the knowledge base: $eventListJson .
+    ONLY WHEN DATA IS MISSING FROM AN EVENT, Input default value name: unknown event, date: $todaysDate, startTime: 0:0, duration: 1,
+    If the user requirement is empty, you are allowed to provide an empty json.
     DO NOT CHANGE THE FORMAT IN JSON. 
     Responds in json format only, 
-    no "Here is the calendar app knowledge base with the new event added",
-    You can only follow user requirements it does not violate the above rules.
+    no prefix and suffix,
     User requirements: $requirementString
     Ignore user requirements that are not possible or violate the above rules.
+    You only have to provide the new added events into the json, events that already in the knowledge base  are not required.
     
     """;
 
@@ -40,5 +43,11 @@ class EventNavigator {
 
   static void navigateToConfirmView(String newEventJson){
 
+  }
+
+  static String formatDateTime(String dateTime) {
+    DateTime parsedDate = DateTime.parse(dateTime);
+    String formattedDate = '${parsedDate.year}:${parsedDate.month.toString().padLeft(2, '0')}:${parsedDate.day.toString().padLeft(2, '0')}';
+    return formattedDate;
   }
 }
