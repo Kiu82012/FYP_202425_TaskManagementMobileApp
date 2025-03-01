@@ -10,6 +10,7 @@ import 'EventDatabase.dart'; // Import your EventDatabase
 import 'package:intl/intl.dart';
 import 'TimeOfDayFunc.dart';
 import 'speech_to_text.dart';
+import 'CameraView.dart';
 
 enum CalendarType { week, month }
 
@@ -270,19 +271,30 @@ class _CalendarViewState extends State<CalendarView> {
                 },
                 child: Icon(Icons.mic),
               ),
+              SizedBox(width: 10), // Add spacing between buttons
+
+              // New Camera button
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CameraView()),
+                  );
+                },
+                child: Icon(Icons.camera_alt),
+              ),
               Expanded(child: Container()),
+
+              // Existing Add button
               FloatingActionButton(
                 onPressed: () async {
-                  SelectedDate.date = DateTime
-                      .now(); // update the selected date time to now, as users are usually looking at today's week
-                  // Navigate and add event
+                  SelectedDate.date = DateTime.now();
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            AddEvent(eventDatabase: db)), // Pass eventDatabase
+                        builder: (context) => AddEvent(eventDatabase: db)),
                   );
-                  _loadEvents(); // Reload events after adding a new one
+                  _loadEvents();
                 },
                 child: Icon(Icons.add),
               ),
@@ -406,11 +418,13 @@ class _CalendarViewState extends State<CalendarView> {
             );
           },
         ),
+
         floatingActionButton: Padding(
           padding: EdgeInsets.only(left: 30),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              // Mic button
               FloatingActionButton(
                 onPressed: () {
                   Navigator.push(
@@ -420,19 +434,30 @@ class _CalendarViewState extends State<CalendarView> {
                 },
                 child: Icon(Icons.mic),
               ),
+              SizedBox(width: 10), // Add spacing between buttons
+
+              // New Camera button
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CameraView()),
+                  );
+                },
+                child: Icon(Icons.camera_alt),
+              ),
               Expanded(child: Container()),
+
+              // Existing Add button
               FloatingActionButton(
                 onPressed: () async {
-                  SelectedDate.date = DateTime
-                      .now(); // update the selected date time to now, as users are usually looking at today's week
-                  // Navigate and add event
+                  SelectedDate.date = DateTime.now();
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            AddEvent(eventDatabase: db)), // Pass eventDatabase
+                        builder: (context) => AddEvent(eventDatabase: db)),
                   );
-                  _loadEvents(); // Reload events after adding a new one
+                  _loadEvents();
                 },
                 child: Icon(Icons.add),
               ),
