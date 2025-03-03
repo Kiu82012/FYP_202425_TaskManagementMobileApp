@@ -347,8 +347,7 @@ class _CalendarViewState extends State<CalendarView> {
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
                       SizedBox(
-                          width:
-                              45), // Add spacing between title and FloatingActionButton
+                          width: 45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date =

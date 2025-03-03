@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CameraView extends StatefulWidget {
   const CameraView({super.key});
@@ -65,32 +66,42 @@ class _CameraViewState extends State<CameraView> {
 
   /// Captures photo and provides user feedback
   Future<void> _takePhoto() async {
-    // Guard clause if camera isn't ready
     if (_controller == null || !_controller!.value.isInitialized) return;
 
     try {
-      // Show visual feedback immediately
       setState(() => _showCaptureFeedback = true);
 
       // 1. Capture image
       final image = await _controller!.takePicture();
+      print(image.path);
+      // 2. Show preview screen
+      if (!mounted) return;
 
-      // 2. Show success feedback
-      _showSuccess('Photo captured!');
+      final confirmed = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PhotoPreviewScreen(
+            imagePath: image.path,
+            onConfirm: () => Navigator.pop(context, true),
+            onRetake: () => Navigator.pop(context, false),
+          ),
+        ),
+      );
 
-      // 3. Keep feedback visible for 1 second
-      await Future.delayed(const Duration(seconds: 1));
+      // 3. Handle confirmation or retake
+      if (confirmed ?? false) {
+        _showSuccess('Photo saved successfully!');
+        // Add your photo saving logic here
+      } else {
+        _showSuccess('Photo discarded');
+      }
 
-      // 4. Hide feedback (if still mounted)
+    } catch (e) {
+      _showError('Failed to capture photo: ${e.toString()}');
+    } finally {
       if (mounted) {
         setState(() => _showCaptureFeedback = false);
       }
-
-      // Print path for development purposes
-      print("Captured image path: ${image.path}");
-
-    } catch (e) {
-      _showError('Failed to capture photo');
     }
   }
 
@@ -231,6 +242,51 @@ class _CameraViewState extends State<CameraView> {
     return FloatingActionButton(
       onPressed: _takePhoto,
       child: const Icon(Icons.camera),
+    );
+  }
+}
+
+// Add new widget class for the confirmation
+class PhotoPreviewScreen extends StatelessWidget {
+  final String imagePath;
+  final VoidCallback onConfirm;
+  final VoidCallback onRetake;
+
+  const PhotoPreviewScreen({
+    super.key,
+    required this.imagePath,
+    required this.onConfirm,
+    required this.onRetake,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Preview Photo'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: onRetake,
+        ),
+      ),
+      body: Center(
+        child: Image.file(File(imagePath)),
+      ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          FloatingActionButton(
+            onPressed: onConfirm,
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.check, color: Colors.white),
+          ),
+          FloatingActionButton(
+            onPressed: onRetake,
+            backgroundColor: Colors.red,
+            child: const Icon(Icons.close, color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 }
