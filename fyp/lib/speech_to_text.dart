@@ -7,19 +7,17 @@ class SpeechText extends StatefulWidget {
   SpeechText({super.key});
 
   final _SpeechToTextState state = _SpeechToTextState();
+  static String wordSpoken = " hihihih";
 
   @override
   State<SpeechText> createState() => state;
 
-  String getWordSpoken(){
-    return state.wordSpoken;
-  }
-}
 
+}
 class _SpeechToTextState extends State<SpeechText> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
-  String wordSpoken = "";
+
   bool _isListening = false; // Track listening state
   String _lastRecognized = "";
 
@@ -43,7 +41,7 @@ class _SpeechToTextState extends State<SpeechText> {
     if (!_isListening) { // Prevent multiple starts
       setState(() {
         _isListening = true;
-        wordSpoken=" ";
+        SpeechText.wordSpoken=" ";
       });
       print("start");
       await _speechToText.listen(
@@ -70,7 +68,7 @@ class _SpeechToTextState extends State<SpeechText> {
     setState(() {
       String newWords = result.recognizedWords.replaceFirst(_lastRecognized, "").trim();
       if (newWords.isNotEmpty) {
-        wordSpoken += " " + newWords; // Append only new words
+        SpeechText.wordSpoken += " " + newWords; // Append only new words
       }
       _lastRecognized = result.recognizedWords; // Update last processed text
     });
@@ -96,7 +94,7 @@ class _SpeechToTextState extends State<SpeechText> {
               color: _isListening ? Colors.red : Colors.grey,
             ),
             SizedBox(height: 16),
-            Text(wordSpoken.isNotEmpty ? wordSpoken : 'start speaking'),
+            Text(SpeechText.wordSpoken.isNotEmpty ? SpeechText.wordSpoken : 'start speaking'),
           ],
         ),
       ),

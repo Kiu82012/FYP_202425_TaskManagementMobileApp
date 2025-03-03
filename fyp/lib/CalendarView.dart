@@ -32,17 +32,15 @@ class _CalendarViewState extends State<CalendarView> {
   //==============================================================================================================================
   OverlayEntry? _overlayEntry;
 
-  String spokenWords = "default";
+  String spokenWords = "new words";
 
   void _showSpeechOverlay(BuildContext context) {
 
-    SpeechText st = SpeechText();
-
     _overlayEntry = OverlayEntry(
-      builder: (context) => st,
+      builder: (context) => SpeechText(),
     );
 
-    spokenWords = st.getWordSpoken();
+
 
     Overlay.of(context).insert(_overlayEntry!);
   }
@@ -52,7 +50,7 @@ class _CalendarViewState extends State<CalendarView> {
       _overlayEntry!.remove();
       _overlayEntry = null;
     }
-
+    spokenWords = SpeechText.wordSpoken;
     // Open confirm view after this
     PassRequirementsToAI(context);
   }
