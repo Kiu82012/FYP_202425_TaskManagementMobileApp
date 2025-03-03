@@ -1,31 +1,38 @@
-
 import 'package:flutter/material.dart';
 import 'package:speech_to_text_continuous/speech_recognition_result.dart';
 import 'package:speech_to_text_continuous/speech_to_text.dart';
 
 
 class SpeechText extends StatefulWidget {
-  const SpeechText({super.key});
+  SpeechText({super.key});
+
+  final _SpeechToTextState state = _SpeechToTextState();
+  static String wordSpoken = " hihihih";
 
   @override
-  State<SpeechText> createState() => _SpeechToTextState();
-}
+  State<SpeechText> createState() => state;
 
+
+}
 class _SpeechToTextState extends State<SpeechText> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
-  String _wordSpoken = "";
+
   bool _isListening = false; // Track listening state
   String _lastRecognized = "";
-
 
   @override
   void initState() {
     super.initState();
-    _initSpeech();
+
+    _initSpeech().then((_) {
+      if (_speechEnabled) {
+        _startListening();
+      }
+    });
   }
 
-  void _initSpeech() async {
+  Future<void> _initSpeech() async { // 改為異步初始化
     _speechEnabled = await _speechToText.initialize();
     setState(() {});
   }
@@ -34,7 +41,7 @@ class _SpeechToTextState extends State<SpeechText> {
     if (!_isListening) { // Prevent multiple starts
       setState(() {
         _isListening = true;
-        _wordSpoken=" ";
+        SpeechText.wordSpoken=" ";
       });
       print("start");
       await _speechToText.listen(
@@ -61,7 +68,7 @@ class _SpeechToTextState extends State<SpeechText> {
     setState(() {
       String newWords = result.recognizedWords.replaceFirst(_lastRecognized, "").trim();
       if (newWords.isNotEmpty) {
-        _wordSpoken += " " + newWords; // Append only new words
+        SpeechText.wordSpoken += " " + newWords; // Append only new words
       }
       _lastRecognized = result.recognizedWords; // Update last processed text
     });
@@ -74,54 +81,24 @@ class _SpeechToTextState extends State<SpeechText> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Speech Demo'),
-      ),
-      body: Center(
+    return AlertDialog(
+      backgroundColor: Colors.black12,
+      content: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                _isListening // Use _isListening to update the text
-                    ? 'Listening...'
-                    : (_speechEnabled
-                    ? 'Tap the microphone to start listening'
-                    : 'Speech not available'),
-                style: const TextStyle(fontSize: 20.0),
-              ),
+          children: [
+            Icon(
+              Icons.mic,
+              size: 36,
+              color: _isListening ? Colors.red : Colors.grey,
             ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                  child: Text(_wordSpoken),
-                ),
-              ),
-            ),
+            SizedBox(height: 16),
+            Text(SpeechText.wordSpoken.isNotEmpty ? SpeechText.wordSpoken : 'start speaking'),
           ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _toggleListening, // Toggle between listening and not listening
-        tooltip: 'Listen',
-        child: Icon(
-          _isListening ? Icons.mic : Icons.mic_off, // Show correct icon
-          size: 36,
         ),
       ),
     );
   }
 
-  void _toggleListening() {
-    if (_isListening) {
-      _stopListening();
-    } else {
-      _startListening();
-    }
-  }
 }

@@ -1,4 +1,5 @@
 import 'package:fyp/CalendarView.dart';
+import 'package:fyp/EventJsonUtils.dart';
 import 'package:fyp/TimeOfDayFunc.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -47,6 +48,12 @@ class EventDatabase {
       }
 
       print("events are loaded");
+
+      /// TEST ////// TEST ////// TEST ///
+      EventJsonUtils utils = EventJsonUtils();
+      print(utils.eventToJson(_events));
+      /// TEST ////// TEST ////// TEST ///
+
     } else{
       _events = [];
       print("events are empty, creating new");

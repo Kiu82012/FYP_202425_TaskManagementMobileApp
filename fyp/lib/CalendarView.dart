@@ -2,6 +2,8 @@ import 'dart:collection';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:fyp/EventJsonUtils.dart';
+import 'package:fyp/EventNavigator.dart';
 import 'AddEvent.dart';
 import 'ConfirmView.dart';
 import 'EditEvent.dart';
@@ -26,6 +28,58 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarViewState extends State<CalendarView> {
+  //==============================================================================================================================
+  //==Replace showDialog with OverlayEntry==================================================================================================================
+  //==============================================================================================================================
+  OverlayEntry? _overlayEntry;
+
+  String spokenWords = "new words";
+
+  void _showSpeechOverlay(BuildContext context) {
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => SpeechText(),
+    );
+
+
+
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _closeSpeechOverlay() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+    spokenWords = SpeechText.wordSpoken;
+    // Open confirm view after this
+    PassRequirementsToAI(context);
+  }
+
+  void PassRequirementsToAI(BuildContext context) async {
+    print("Passing Requirements to AI...");
+    // Generate Event using AI
+    String newEventListJson = await EventNavigator.generateEvent(spokenWords, db);
+
+    print("Converting json into events...");
+    // Turn json format into event list
+    EventJsonUtils util = EventJsonUtils();
+    List<Event> newEventList = util.jsonToEvent(newEventListJson);
+
+
+    print("Listing events into confirm view...");
+    // Navigate to ConfirmView and play valorant
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConfirmView(events: newEventList),
+      ),
+    );
+  }
+
+  //==============================================================================================================================
+  //==Replace showDialog with OverlayEntry==================================================================================================================
+  //==============================================================================================================================
   CalendarType type = CalendarType.month;
 
   // Create an EventDatabase instance
@@ -160,8 +214,7 @@ class _CalendarViewState extends State<CalendarView> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ConfirmView(
-                            events: db
-                                .getEventList())) // Pass eventDatabase, event chosen
+                            events: db.getEventList())) // Pass eventDatabase, event chosen
                     );
                 _loadEvents(); // Reload events after adding a new one
               },
@@ -257,19 +310,27 @@ class _CalendarViewState extends State<CalendarView> {
             );
           },
         ),
+        //Speaking button
         floatingActionButton: Padding(
           padding: EdgeInsets.only(left: 30),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SpeechText()),
-                  );
+               GestureDetector(
+                onLongPressStart: (details) {
+                  print("I am speaking");
+                  _showSpeechOverlay(context);
                 },
-                child: Icon(Icons.mic),
+                onLongPressEnd: (details) {
+                  // Close the dialog when the user releases the mic button
+
+                  print("Stop speaking");
+                  _closeSpeechOverlay();
+                },
+                child: FloatingActionButton(
+                  onPressed: null,
+                  child: Icon(Icons.mic),
+                ),
               ),
               SizedBox(width: 10), // Add spacing between buttons
 
@@ -300,7 +361,7 @@ class _CalendarViewState extends State<CalendarView> {
               ),
             ],
           ),
-        ),
+        ), // speaking button
       ),
     );
   }
