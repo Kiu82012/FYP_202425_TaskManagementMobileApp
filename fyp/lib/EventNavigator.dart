@@ -5,7 +5,7 @@ import 'EventDatabase.dart';
 class EventNavigator {
   // Static function to generate an event based on a requirement string
   static Future<String> generateEvent(String requirementString, EventDatabase database) async {
-
+    print(requirementString);
     print("Generating event json...");
 
     String todaysDate = formatDateTime(DateTime.now().toString());
@@ -18,12 +18,12 @@ class EventNavigator {
     YOU SHOULD ONLY REVIEW AND AVOID EVENT TIME OVERLAPPING.
     This is the knowledge base: $eventListJson .
     ONLY WHEN DATA IS MISSING FROM AN EVENT, Input default value name: unknown event, date: $todaysDate, startTime: 0:0, duration: 1,
-    If the user requirement is empty, you are allowed to provide an empty json.
+  
     DO NOT CHANGE THE FORMAT IN JSON. 
     Responds in json format only, 
     no prefix and suffix,
     User requirements: $requirementString
-    Ignore user requirements that are not possible or violate the above rules.
+    
     You only have to provide the new added events into the json, events that already in the knowledge base  are not required.
     
     """;

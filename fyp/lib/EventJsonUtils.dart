@@ -1,7 +1,7 @@
 import 'package:fyp/AddEvent.dart';
 import 'package:fyp/CalendarView.dart';
 import 'package:fyp/DurationFunc.dart';
-
+import 'dart:convert';
 import 'Event.dart';
 import 'dart:convert';
 
@@ -41,33 +41,39 @@ class EventJsonUtils{
 
   List<Event> jsonToEvent(String eventJson){
 
-    String trimmedEventJson = extractJson(eventJson);
-
-    if (trimmedEventJson.isEmpty){
-      // decode event json into event object
-      var events = jsonDecode(trimmedEventJson);
-
-      // convert dynamics to a list
-      List<Event> eventList = events.map((eventMap) => Event.fromJson(eventMap)).toList();
-      return eventList;
+    String trimmedEventJson = extractFirstJson(eventJson);
+    print(trimmedEventJson);
+    print("=====================");
+    if (!trimmedEventJson.isEmpty){
+      return eventsFromJson(trimmedEventJson);
     }
-
     return [];
   }
 
-  String extractJson(String input) {
-    // Regular expression to match JSON objects
-    final RegExp jsonRegExp = RegExp(r'({.*?}|[\[.*?\]])', dotAll: true);
 
-    // Find the first match
-    final match = jsonRegExp.firstMatch(input);
 
-    if (match != null) {
-      // Return the matched JSON string
-      return match.group(0)!;
-    } else {
-      // Return an empty string if no JSON is found
-      return "";
+  String extractFirstJson(String input) {
+    // Remove unwanted prefixes and suffixes
+    // This example assumes you want to trim whitespace. Adjust as necessary.
+    input = input.trim();
+
+    // Find the first occurrence of '{' and '}'
+    int startIndex = input.indexOf('{');
+    int endIndex = input.indexOf('}', startIndex);
+
+    // If both indices are found, extract the JSON substring
+    if (startIndex != -1 && endIndex != -1) {
+      String jsonString = input.substring(startIndex, endIndex + 1);
+
+      // Optionally, validate if it's a proper JSON
+      try {
+        jsonDecode(jsonString); // This will throw if the JSON is invalid
+        return "["+jsonString+"]";
+      } catch (e) {
+        return 'Invalid JSON';
+      }
     }
+
+    return 'No JSON found';
   }
 }
