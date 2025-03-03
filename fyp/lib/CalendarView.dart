@@ -64,7 +64,7 @@ class _CalendarViewState extends State<CalendarView> {
     // Turn json format into event list
     EventJsonUtils util = EventJsonUtils();
     List<Event> newEventList = util.jsonToEvent(newEventListJson);
-    print(newEventList);
+
 
     print("Listing events into confirm view...");
     // Navigate to ConfirmView and play valorant

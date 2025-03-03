@@ -31,8 +31,11 @@ class Event {
 
   factory Event.fromJson(Map<String, dynamic> json) {
     String name = json['name'];
-    DateTime date = DateTime.parse(json['date']);
-    TimeOfDay startTime = TimeOfDay(
+    DateTime date = DateTime(
+        int.parse(json['date'].split(':')[0]),
+          int.parse(json['date'].split(':')[1]),
+          int.parse(json['date'].split(':')[2]),);
+        TimeOfDay startTime = TimeOfDay(
       hour: int.parse(json['startTime'].split(':')[0]),
       minute: int.parse(json['startTime'].split(':')[1]),
     );
