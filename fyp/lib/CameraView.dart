@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/ConfirmView.dart';
+import 'package:fyp/Event.dart';
+import 'package:fyp/EventJsonUtils.dart';
+import 'package:fyp/EventNavigator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class CameraView extends StatefulWidget {
   const CameraView({super.key});
 
+  // global var for photo path
+  static late String Photopath;
   @override
   _CameraViewState createState() => _CameraViewState();
 }
@@ -73,7 +79,9 @@ class _CameraViewState extends State<CameraView> {
 
       // 1. Capture image
       final image = await _controller!.takePicture();
-      print(image.path);
+      CameraView.Photopath = image.path;
+      //testing
+      print("Testtt"+CameraView.Photopath);
       // 2. Show preview screen
       if (!mounted) return;
 
@@ -290,5 +298,10 @@ class PhotoPreviewScreen extends StatelessWidget {
     );
   }
 
-
+  void passPhotoToAI(BuildContext context){
+    String json =EventNavigator.generateEventByPhoto(CameraView.Photopath);
+    EventJsonUtils ForPhoto = new EventJsonUtils();
+    List<Event> Photoevent = ForPhoto.jsonToEvent(json);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ConfirmView(events: Photoevent)));
+  }
 }
