@@ -5,8 +5,9 @@ import 'package:speech_to_text_continuous/speech_to_text.dart';
 
 class SpeechText extends StatefulWidget {
   SpeechText({super.key});
-
+  late Function() stopListening;
   final _SpeechToTextState state = _SpeechToTextState();
+
   static String wordSpoken = " hihihih";
 
   @override
@@ -23,8 +24,9 @@ class _SpeechToTextState extends State<SpeechText> {
 
   @override
   void initState() {
-    super.initState();
 
+    super.initState();
+    widget.stopListening= _stopListening;
     _initSpeech().then((_) {
       if (_speechEnabled) {
         _startListening();
@@ -54,14 +56,12 @@ class _SpeechToTextState extends State<SpeechText> {
     }
   }
 
-  void _stopListening() async {
-    if (_isListening) { // Prevent multiple stops
+     void _stopListening() async {
       setState(() {
         _isListening = false;
       });
-      print("stop");
       await _speechToText.stop();
-    }
+      print("stop");
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {

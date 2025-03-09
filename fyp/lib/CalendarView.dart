@@ -12,6 +12,7 @@ import 'EventDatabase.dart'; // Import your EventDatabase
 import 'package:intl/intl.dart';
 import 'TimeOfDayFunc.dart';
 import 'speech_to_text.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 
 enum CalendarType { week, month }
 
@@ -31,17 +32,14 @@ class _CalendarViewState extends State<CalendarView> {
   //==Replace showDialog with OverlayEntry==================================================================================================================
   //==============================================================================================================================
   OverlayEntry? _overlayEntry;
-
+  SpeechText st= SpeechText();
   String spokenWords = "new words";
-
+  bool isSpeaking = false;
   void _showSpeechOverlay(BuildContext context) {
-
+    st=SpeechText();
     _overlayEntry = OverlayEntry(
-      builder: (context) => SpeechText(),
+      builder: (context) => st,
     );
-
-
-
     Overlay.of(context).insert(_overlayEntry!);
   }
 
@@ -50,6 +48,7 @@ class _CalendarViewState extends State<CalendarView> {
       _overlayEntry!.remove();
       _overlayEntry = null;
     }
+    st.stopListening.call();
     spokenWords = SpeechText.wordSpoken;
     // Open confirm view after this
     PassRequirementsToAI(context);
@@ -318,18 +317,25 @@ class _CalendarViewState extends State<CalendarView> {
                GestureDetector(
                 onLongPressStart: (details) {
                   print("I am speaking");
+                  setState(() => isSpeaking = true);
                   _showSpeechOverlay(context);
                 },
                 onLongPressEnd: (details) {
                   // Close the dialog when the user releases the mic button
-
                   print("Stop speaking");
+                  setState(() => isSpeaking = false);
                   _closeSpeechOverlay();
                 },
-                child: FloatingActionButton(
-                  onPressed: null,
-                  child: Icon(Icons.mic),
-                ),
+                 child: AvatarGlow(
+                   animate: isSpeaking,
+                   glowColor: Colors.blue, // Customize glow color
+                   duration: const Duration(milliseconds: 2000),
+                   repeat: true,
+                   child: FloatingActionButton(
+                     onPressed: null,
+                     child: Icon(Icons.mic),
+                   ),
+                 ),
               ),
               Expanded(child: Container()),
               FloatingActionButton(
@@ -472,14 +478,21 @@ class _CalendarViewState extends State<CalendarView> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SpeechText()),
-                  );
+              GestureDetector(
+                onLongPressStart: (details) {
+                  print("I am speaking");
+                  _showSpeechOverlay(context);
                 },
-                child: Icon(Icons.mic),
+                onLongPressEnd: (details) {
+                  // Close the dialog when the user releases the mic button
+
+                  print("Stop speaking");
+                  _closeSpeechOverlay();
+                },
+                child: FloatingActionButton(
+                  onPressed: null,
+                  child: Icon(Icons.mic),
+                ),
               ),
               Expanded(child: Container()),
               FloatingActionButton(
