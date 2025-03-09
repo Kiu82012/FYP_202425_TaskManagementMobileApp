@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:fyp/EventJsonUtils.dart';
@@ -13,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'TimeOfDayFunc.dart';
 import 'speech_to_text.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'CameraView.dart';
 
 enum CalendarType { week, month }
 
@@ -40,6 +42,9 @@ class _CalendarViewState extends State<CalendarView> {
     _overlayEntry = OverlayEntry(
       builder: (context) => st,
     );
+
+
+
     Overlay.of(context).insert(_overlayEntry!);
   }
 
@@ -337,19 +342,35 @@ class _CalendarViewState extends State<CalendarView> {
                    ),
                  ),
               ),
+              SizedBox(width: 10), // Add spacing between buttons
+
+              // New Camera button
+              FloatingActionButton(
+                // In your floating action button's onPressed:
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CameraView(
+                        PassPhotoToAI: () => passPhotoToAI(), // Add async if needed
+                      ),
+                    ),
+                  );
+                },
+                child: Icon(Icons.camera_alt),
+              ),
               Expanded(child: Container()),
+
+              // Existing Add button
               FloatingActionButton(
                 onPressed: () async {
-                  SelectedDate.date = DateTime
-                      .now(); // update the selected date time to now, as users are usually looking at today's week
-                  // Navigate and add event
+                  SelectedDate.date = DateTime.now();
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            AddEvent(eventDatabase: db)), // Pass eventDatabase
+                        builder: (context) => AddEvent(eventDatabase: db)),
                   );
-                  _loadEvents(); // Reload events after adding a new one
+                  _loadEvents();
                 },
                 child: Icon(Icons.add),
               ),
@@ -429,8 +450,7 @@ class _CalendarViewState extends State<CalendarView> {
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
                       SizedBox(
-                          width:
-                              45), // Add spacing between title and FloatingActionButton
+                          width: 45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date =
@@ -521,6 +541,23 @@ class _CalendarViewState extends State<CalendarView> {
                   child: Icon(Icons.mic),
                 ),
               ),
+              SizedBox(width: 10), // Add spacing between buttons
+
+              // New Camera button
+              FloatingActionButton(
+                // In your floating action button's onPressed:
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CameraView(
+                        PassPhotoToAI: () => passPhotoToAI(), // Add async if needed
+                      ),
+                    ),
+                  );
+                },
+                child: Icon(Icons.camera_alt),
+              ),
               Expanded(child: Container()),
               FloatingActionButton(
                 onPressed: () async {
@@ -542,5 +579,26 @@ class _CalendarViewState extends State<CalendarView> {
         ),
       ),
     );
+  }
+
+  Future<void> passPhotoToAI() async {
+    try {
+      String json = await EventNavigator.generateEventByPhoto(File(CameraView.Photopath), db);
+      EventJsonUtils ForPhoto = EventJsonUtils();
+      List<Event> Photoevent = ForPhoto.jsonToEvent(json);
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfirmView(
+              events: Photoevent,
+              loadEventCallback: _loadEvents,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error processing photo: $e");
+    }
   }
 }

@@ -79,9 +79,6 @@ class _HomeState extends State<Home> {
             child: ToDoListView(),
           ),
           Center(
-            child: CameraView(),
-          ),
-          Center(
               child: AIChatroom()
           ),
         ],
@@ -100,10 +97,6 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist),
             label: 'To-Do-List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
-            label: 'Camera',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),

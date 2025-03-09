@@ -41,23 +41,34 @@ class EventJsonUtils{
 
   List<Event> jsonToEvent(String eventJson){
 
-    String trimmedEventJson = extractFirstJson(eventJson);
-    print(trimmedEventJson);
-    print("=====================");
-    if (!trimmedEventJson.isEmpty && trimmedEventJson != 'Invalid JSON' && trimmedEventJson != 'No JSON found'){
-      return eventsFromJson(trimmedEventJson);
+    List<String> trimmedEventJsonList = extractAllJson(eventJson);
+
+    print("Formatting Events");
+
+    List<Event> eventList = [];
+
+    for (String trimmedEventJson in trimmedEventJsonList){
+      if (!trimmedEventJson.isEmpty && trimmedEventJson != 'Invalid JSON' && trimmedEventJson != 'No JSON found'){
+        print(trimmedEventJson);
+        eventList.add(eventsFromJson(trimmedEventJson)[0]);
+      }
     }
-    return [];
+
+    return eventList;
   }
 
 
-  String extractFirstJson(String input) {
+  List<String> extractAllJson(String input) {
     input = input.trim();
+    List<String> jsonStrings = [];
 
-    int startIndex = input.indexOf('{');
-    int endIndex = input.indexOf('}', startIndex);
+    int startIndex = 0;
 
-    if (startIndex != -1 && endIndex != -1) {
+    while ((startIndex = input.indexOf('{', startIndex)) != -1) {
+      int endIndex = input.indexOf('}', startIndex);
+
+      if (endIndex == -1) break; // No closing brace found
+
       String jsonString = input.substring(startIndex, endIndex + 1);
 
       try {
@@ -71,15 +82,15 @@ class EventJsonUtils{
 
         // Encode the modified Map back to a JSON string
         String modifiedJsonString = jsonEncode(jsonMap);
-
-        return "[" + modifiedJsonString + "]";
+        jsonStrings.add(modifiedJsonString);
       } catch (e) {
         print('Error decoding or processing JSON: $e');
-        return 'Invalid JSON';
       }
+
+      startIndex = endIndex + 1; // Move past the current JSON object
     }
 
-    return 'No JSON found';
+    return jsonStrings.isNotEmpty ? jsonStrings : ['No JSON found'];
   }
 
 
