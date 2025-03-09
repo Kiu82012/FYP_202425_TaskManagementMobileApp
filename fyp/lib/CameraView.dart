@@ -33,7 +33,7 @@ class _CameraViewState extends State<CameraView> {
   bool _showCaptureFeedback = false; // Visual feedback after capture
   @override
     void initState(){
-    _PassPhotoToAI = widget.PassPhotoToAI() as Function();
+    _PassPhotoToAI = widget.PassPhotoToAI;
   }
 
   /// Initializes camera hardware and prepares preview
@@ -78,7 +78,9 @@ class _CameraViewState extends State<CameraView> {
   }
 
   void OnConfirm(){
+    print("Passing photo to AI");
     _PassPhotoToAI();
+    Navigator.pop(context, true);
   }
 
   /// Captures photo and provides user feedback
@@ -101,7 +103,7 @@ class _CameraViewState extends State<CameraView> {
         MaterialPageRoute(
           builder: (context) => PhotoPreviewScreen(
             imagePath: image.path,
-            onConfirm: () => Navigator.pop(context, true),
+            onConfirm: OnConfirm,
             onRetake: () => Navigator.pop(context, false),
           ),
         ),
