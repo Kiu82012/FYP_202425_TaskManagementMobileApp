@@ -44,36 +44,67 @@ class EventJsonUtils{
     String trimmedEventJson = extractFirstJson(eventJson);
     print(trimmedEventJson);
     print("=====================");
-    if (!trimmedEventJson.isEmpty){
+    if (!trimmedEventJson.isEmpty && trimmedEventJson != 'Invalid JSON' && trimmedEventJson != 'No JSON found'){
       return eventsFromJson(trimmedEventJson);
     }
     return [];
   }
 
 
-
   String extractFirstJson(String input) {
-    // Remove unwanted prefixes and suffixes
-    // This example assumes you want to trim whitespace. Adjust as necessary.
     input = input.trim();
 
-    // Find the first occurrence of '{' and '}'
     int startIndex = input.indexOf('{');
     int endIndex = input.indexOf('}', startIndex);
 
-    // If both indices are found, extract the JSON substring
     if (startIndex != -1 && endIndex != -1) {
       String jsonString = input.substring(startIndex, endIndex + 1);
 
-      // Optionally, validate if it's a proper JSON
       try {
-        jsonDecode(jsonString); // This will throw if the JSON is invalid
-        return "["+jsonString+"]";
+        // Decode the JSON string to a Map
+        Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+        // Attempt to parse and standardize the duration
+        if (jsonMap.containsKey('duration')) {
+          jsonMap['duration'] = standardizeDuration(jsonMap['duration']);
+        }
+
+        // Encode the modified Map back to a JSON string
+        String modifiedJsonString = jsonEncode(jsonMap);
+
+        return "[" + modifiedJsonString + "]";
       } catch (e) {
+        print('Error decoding or processing JSON: $e');
         return 'Invalid JSON';
       }
     }
 
     return 'No JSON found';
+  }
+
+
+  String standardizeDuration(dynamic duration) {
+    if (duration is String) {
+      if (duration.contains(':')) {
+        // Handle "X:Y" or "X:YY" format
+        List<String> parts = duration.split(':');
+        if (parts.length == 2) {
+          int hours = int.tryParse(parts[0]) ?? 0;
+          int minutes = int.tryParse(parts[1]) ?? 0;  // Handle missing or invalid minutes
+          return '$hours:${minutes.toString().padLeft(2, '0')}'; // Standardize to "X:YY"
+        } else {
+          return 'Invalid Duration Format'; // More than two parts
+        }
+      } else {
+        // Handle just "X" format (assume hours)
+        int hours = int.tryParse(duration) ?? 0;
+        return '$hours:00'; // Standardize to "X:00"
+      }
+    } else if (duration is int) {
+      // Handle integer duration (assume hours)
+      return '$duration:00';
+    } else {
+      return 'Invalid Duration Type'; // Not a string or int
+    }
   }
 }
