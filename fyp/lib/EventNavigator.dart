@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fyp/EventJsonUtils.dart';
 import 'AIHelper.dart';
 import 'EventDatabase.dart';
@@ -36,7 +38,7 @@ class EventNavigator {
   }
 
   // Static function to generate an event based on a photo path
-  static String generateEventByPhoto(String photoPath, EventDatabase database) {
+  static Future<String> generateEventByPhoto(File photoFile, EventDatabase database) async {
     print("Generating event json...");
 
     String todaysDate = formatDateTime(DateTime.now().toString());
@@ -59,7 +61,7 @@ class EventNavigator {
     
     """;
 
-    String newJsonEvent = await AIHelper.sendTextAndImageToAI(, prompt);
+    String newJsonEvent = await AIHelper.sendTextAndImageToAI(text: prompt, imageFiles: [photoFile]);
 
     print(newJsonEvent);
 
