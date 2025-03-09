@@ -49,6 +49,7 @@ class EventJsonUtils{
 
     for (String trimmedEventJson in trimmedEventJsonList){
       if (!trimmedEventJson.isEmpty && trimmedEventJson != 'Invalid JSON' && trimmedEventJson != 'No JSON found'){
+        print(trimmedEventJson);
         eventList.add(eventsFromJson(trimmedEventJson)[0]);
       }
     }
