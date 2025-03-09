@@ -9,7 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class CameraView extends StatefulWidget {
-  const CameraView({super.key});
+  final Future<void> Function() PassPhotoToAI;
+  const CameraView({super.key, required this.PassPhotoToAI});
 
   // global var for photo path
   static late String Photopath;
@@ -24,10 +25,16 @@ class _CameraViewState extends State<CameraView> {
   // Future to track camera initialization progress
   Future<void>? _initializeControllerFuture;
 
+  late Function() _PassPhotoToAI; //not same as the one in line 16
+
   // State flags
   bool _isCameraActive = false;  // Whether camera preview is showing
   bool _isLoading = false;       // Loading state during camera setup
   bool _showCaptureFeedback = false; // Visual feedback after capture
+  @override
+    void initState(){
+    _PassPhotoToAI = widget.PassPhotoToAI() as Function();
+  }
 
   /// Initializes camera hardware and prepares preview
   Future<void> _initializeCamera() async {
@@ -68,6 +75,10 @@ class _CameraViewState extends State<CameraView> {
       _isCameraActive = false;
       _initializeControllerFuture = null;
     });
+  }
+
+  void OnConfirm(){
+    _PassPhotoToAI();
   }
 
   /// Captures photo and provides user feedback
@@ -298,10 +309,5 @@ class PhotoPreviewScreen extends StatelessWidget {
     );
   }
 
-  void passPhotoToAI(BuildContext context){
-    String json =EventNavigator.generateEventByPhoto(CameraView.Photopath);
-    EventJsonUtils ForPhoto = new EventJsonUtils();
-    List<Event> Photoevent = ForPhoto.jsonToEvent(json);
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ConfirmView(events: Photoevent)));
-  }
+
 }

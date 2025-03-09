@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:fyp/EventJsonUtils.dart';
@@ -336,10 +337,15 @@ class _CalendarViewState extends State<CalendarView> {
 
               // New Camera button
               FloatingActionButton(
+                // In your floating action button's onPressed:
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CameraView()),
+                    MaterialPageRoute(
+                      builder: (context) => CameraView(
+                        PassPhotoToAI: () => passPhotoToAI(), // Add async if needed
+                      ),
+                    ),
                   );
                 },
                 child: Icon(Icons.camera_alt),
@@ -525,10 +531,15 @@ class _CalendarViewState extends State<CalendarView> {
 
               // New Camera button
               FloatingActionButton(
+                // In your floating action button's onPressed:
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CameraView()),
+                    MaterialPageRoute(
+                      builder: (context) => CameraView(
+                        PassPhotoToAI: () => passPhotoToAI(), // Add async if needed
+                      ),
+                    ),
                   );
                 },
                 child: Icon(Icons.camera_alt),
@@ -553,5 +564,26 @@ class _CalendarViewState extends State<CalendarView> {
         ),
       ),
     );
+  }
+
+  Future<void> passPhotoToAI() async {
+    try {
+      String json = await EventNavigator.generateEventByPhoto(File(CameraView.Photopath), db);
+      EventJsonUtils ForPhoto = EventJsonUtils();
+      List<Event> Photoevent = ForPhoto.jsonToEvent(json);
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfirmView(
+              events: Photoevent,
+              loadEventCallback: _loadEvents,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error processing photo: $e");
+    }
   }
 }
