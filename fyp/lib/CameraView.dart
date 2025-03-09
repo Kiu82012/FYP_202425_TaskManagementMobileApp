@@ -126,6 +126,22 @@ class _CameraViewState extends State<CameraView> {
     }
   }
 
+  Future<void> _selectFromGallery() async {
+    try {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
+
+      if (pickedFile != null) {
+        print('Selected image path: ${pickedFile.path}');
+        _showSuccess('Image selected from gallery');
+        // You can add your image handling logic here
+      }
+    } catch (e) {
+      _showError('Failed to select image: ${e.toString()}');
+    }
+  }
+
   /// Displays success message using SnackBar
   void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -155,21 +171,6 @@ class _CameraViewState extends State<CameraView> {
     super.dispose();
   }
 
-  Future<void> _selectFromGallery() async {
-    try {
-      final pickedFile = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-      );
-
-      if (pickedFile != null) {
-        print('Selected image path: ${pickedFile.path}');
-        _showSuccess('Image selected from gallery');
-        // You can add your image handling logic here
-      }
-    } catch (e) {
-      _showError('Failed to select image: ${e.toString()}');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
