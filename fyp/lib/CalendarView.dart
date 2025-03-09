@@ -71,7 +71,7 @@ class _CalendarViewState extends State<CalendarView> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ConfirmView(events: newEventList),
+        builder: (context) => ConfirmView(events: newEventList, loadEventCallback: _loadEvents),
       ),
     );
   }
@@ -213,7 +213,7 @@ class _CalendarViewState extends State<CalendarView> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ConfirmView(
-                            events: db.getEventList())) // Pass eventDatabase, event chosen
+                            events: db.getEventList(), loadEventCallback: _loadEvents,)) // Pass eventDatabase, event chosen
                     );
                 _loadEvents(); // Reload events after adding a new one
               },

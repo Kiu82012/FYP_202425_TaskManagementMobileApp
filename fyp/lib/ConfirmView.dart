@@ -5,8 +5,9 @@ import 'Event.dart';
 
 class ConfirmView extends StatefulWidget {
   final List<Event> events; // Events to be confirmed
+  final Function loadEventCallback;
 
-  const ConfirmView({super.key, required this.events}); // Constructor
+  const ConfirmView({super.key, required this.events, required this.loadEventCallback}); // Constructor
 
   @override
   _ConfirmViewState createState() => _ConfirmViewState();
@@ -14,17 +15,13 @@ class ConfirmView extends StatefulWidget {
 
 class _ConfirmViewState extends State<ConfirmView> {
   late List<Event> _events;
+  late Function loadEventCallback;
 
   @override
   void initState() {
     super.initState();
     _events = List.from(widget.events); // Create a mutable copy
-  }
-
-  void _removeEvent(Event event) {
-    setState(() {
-      _events.remove(event); // Remove the unwanted event
-    });
+    loadEventCallback = widget.loadEventCallback;
   }
 
   void AddEventsIntoDatabaseAfterConfirmation(){
@@ -49,6 +46,9 @@ class _ConfirmViewState extends State<ConfirmView> {
               if (_events.isNotEmpty) {
                 // Call the function to add events to the database
                 AddEventsIntoDatabaseAfterConfirmation();
+
+                // Run the callback function to trigger calendar update
+                loadEventCallback.call();
 
                 // Show the confirmation snackbar
                 ScaffoldMessenger.of(context).showSnackBar(
