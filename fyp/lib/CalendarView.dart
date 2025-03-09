@@ -382,6 +382,33 @@ class _CalendarViewState extends State<CalendarView> {
           ],
         ),
         body: WeekView(
+          eventTileBuilder: (date, events, boundary, start, end) {
+            return SingleChildScrollView(
+              child: Container(
+                height: boundary.height,
+                decoration: BoxDecoration(
+                  color: Colors.blue[400],
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Column(
+                  children: events.map((event) {
+                    return Container(
+                      padding: EdgeInsets.all(3.0),
+                      child: Text(
+                        event.title,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          },
           controller: eventController,
           showLiveTimeLineInAllDays: false,
           heightPerMinute: 1,
