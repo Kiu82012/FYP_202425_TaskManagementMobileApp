@@ -84,7 +84,9 @@ class _SpeechToTextState extends State<SpeechText> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.black12,
+      shadowColor: Colors.black,
+      backgroundColor: Colors.white,
+      elevation: 5,
       content: SingleChildScrollView(
         child: Column(
           children: [

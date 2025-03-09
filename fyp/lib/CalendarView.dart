@@ -72,7 +72,7 @@ class _CalendarViewState extends State<CalendarView> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ConfirmView(events: newEventList),
+        builder: (context) => ConfirmView(events: newEventList, loadEventCallback: _loadEvents),
       ),
     );
   }
@@ -214,7 +214,7 @@ class _CalendarViewState extends State<CalendarView> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ConfirmView(
-                            events: db.getEventList())) // Pass eventDatabase, event chosen
+                            events: db.getEventList(), loadEventCallback: _loadEvents,)) // Pass eventDatabase, event chosen
                     );
                 _loadEvents(); // Reload events after adding a new one
               },
@@ -388,6 +388,33 @@ class _CalendarViewState extends State<CalendarView> {
           ],
         ),
         body: WeekView(
+          eventTileBuilder: (date, events, boundary, start, end) {
+            return SingleChildScrollView(
+              child: Container(
+                height: boundary.height,
+                decoration: BoxDecoration(
+                  color: Colors.blue[400],
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Column(
+                  children: events.map((event) {
+                    return Container(
+                      padding: EdgeInsets.all(3.0),
+                      child: Text(
+                        event.title,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          },
           controller: eventController,
           showLiveTimeLineInAllDays: false,
           heightPerMinute: 1,

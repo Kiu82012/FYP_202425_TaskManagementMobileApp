@@ -17,8 +17,8 @@ class EventNavigator {
     Calendar App Knowledge Base, DO NOT CHANGE THE DATA FROM THE KNOWLEDGE BASE.
     YOU SHOULD ONLY REVIEW AND AVOID EVENT TIME OVERLAPPING.
     This is the knowledge base: $eventListJson .
-    ONLY WHEN DATA IS MISSING FROM AN EVENT, Input default value name: unknown event, date: $todaysDate, startTime: 0:0, duration: 1:0),
-    Remember the duration should include minutes . For example the user said the duration is 1 hour. That means 1hour 0 minute which is 1:0
+    Input default value name: unknown event, date: $todaysDate, startTime: 0:0,endTime:0:0, duration: 1:0) ONLY WHEN DATA IS MISSING FROM AN EVENT,
+    Remember the duration should include minutes as well . For example if the user said the duration is 1 hour, input duration: 1:0  , if the user said the duration is 2 hours, input duration 2:0. And so on.
     DO NOT CHANGE THE FORMAT IN JSON. 
     Responds in json format only, 
     no prefix and suffix,

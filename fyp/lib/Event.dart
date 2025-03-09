@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fyp/ConfirmListViewItem.dart';
+import 'package:fyp/DurationFunc.dart';
 import 'package:hive/hive.dart';
 
 part 'Event.g.dart';
@@ -35,10 +37,12 @@ class Event {
         int.parse(json['date'].split(':')[0]),
           int.parse(json['date'].split(':')[1]),
           int.parse(json['date'].split(':')[2]),);
+
         TimeOfDay startTime = TimeOfDay(
       hour: int.parse(json['startTime'].split(':')[0]),
       minute: int.parse(json['startTime'].split(':')[1]),
     );
+
     TimeOfDay endTime = TimeOfDay(
       hour: int.parse(json['endTime'].split(':')[0]),
       minute: int.parse(json['endTime'].split(':')[1]),
