@@ -392,9 +392,10 @@ class _CalendarViewState extends State<CalendarView> {
                         event.title,
                         style: TextStyle(
                           fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.normal,
                           color: Colors.white,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     );
                   }).toList(),
