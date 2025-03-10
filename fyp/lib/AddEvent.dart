@@ -129,7 +129,6 @@ class _AddEventState extends State<AddEvent> {
                       "Date: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
@@ -168,7 +167,6 @@ class _AddEventState extends State<AddEvent> {
                       "Time: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
@@ -208,7 +206,6 @@ class _AddEventState extends State<AddEvent> {
                       "Duration: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
