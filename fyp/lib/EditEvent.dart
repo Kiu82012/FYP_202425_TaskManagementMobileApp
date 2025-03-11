@@ -194,7 +194,6 @@ class _EditEventState extends State<EditEvent> {
                       "Date: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
@@ -233,7 +232,6 @@ class _EditEventState extends State<EditEvent> {
                       "Time: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
@@ -273,7 +271,6 @@ class _EditEventState extends State<EditEvent> {
                       "Duration: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
