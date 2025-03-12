@@ -47,9 +47,13 @@ class Event {
       hour: int.parse(json['endTime'].split(':')[0]),
       minute: int.parse(json['endTime'].split(':')[1]),
     );
+
+    // special treatment for duration
+    String formattedDuration = standardizeDuration(json['duration']);
+
     Duration duration = Duration(
-      hours: int.parse(json['duration'].split(':')[0]),
-      minutes: int.parse(json['duration'].split(':')[1]),
+      hours: int.parse(formattedDuration.split(':')[0]),
+      minutes: int.parse(formattedDuration.split(':')[1]),
     );
 
     return Event(
@@ -59,6 +63,31 @@ class Event {
       endTime: endTime,
       duration: duration,
     );
+  }
+
+  static String standardizeDuration(dynamic duration) {
+    if (duration is String) {
+      if (duration.contains(':')) {
+        // Handle "X:Y" or "X:YY" format
+        List<String> parts = duration.split(':');
+        if (parts.length == 2) {
+          int hours = int.tryParse(parts[0]) ?? 0;
+          int minutes = int.tryParse(parts[1]) ?? 0;  // Handle missing or invalid minutes
+          return '$hours:${minutes.toString().padLeft(2, '0')}'; // Standardize to "X:YY"
+        } else {
+          return 'Invalid Duration Format'; // More than two parts
+        }
+      } else {
+        // Handle just "X" format (assume hours)
+        int hours = int.tryParse(duration) ?? 0;
+        return '$hours:00'; // Standardize to "X:00"
+      }
+    } else if (duration is int) {
+      // Handle integer duration (assume hours)
+      return '$duration:00';
+    } else {
+      return 'Invalid Duration Type'; // Not a string or int
+    }
   }
 }
 

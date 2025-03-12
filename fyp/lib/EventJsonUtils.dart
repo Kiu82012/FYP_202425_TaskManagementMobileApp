@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fyp/AddEvent.dart';
 import 'package:fyp/CalendarView.dart';
 import 'package:fyp/DurationFunc.dart';
@@ -41,81 +43,52 @@ class EventJsonUtils{
 
   List<Event> jsonToEvent(String eventJson){
 
-    List<String> trimmedEventJsonList = extractAllJson(eventJson);
+    String trimmedEventJson = trimJson(eventJson);
 
     print("Formatting Events");
 
     List<Event> eventList = [];
 
-    for (String trimmedEventJson in trimmedEventJsonList){
-      if (!trimmedEventJson.isEmpty && trimmedEventJson != 'Invalid JSON' && trimmedEventJson != 'No JSON found'){
+    try{
         print(trimmedEventJson);
-        eventList.add(eventsFromJson(trimmedEventJson)[0]);
-      }
+        eventList = eventsFromJson(trimmedEventJson);
+    } catch (e){
+      log("Json cant convert to event.");
     }
 
     return eventList;
   }
 
 
-  List<String> extractAllJson(String input) {
-    input = input.trim();
-    List<String> jsonStrings = [];
+  String trimJson(String jsonInput) {
+    // Trim whitespace and handle empty input
+    String trimmed = jsonInput.trim();
+    if (trimmed.isEmpty) return '[]';
 
-    int startIndex = 0;
+    // Find first '[' and last ']'
+    final firstBracket = trimmed.indexOf('[');
+    final lastBracket = trimmed.lastIndexOf(']');
 
-    while ((startIndex = input.indexOf('{', startIndex)) != -1) {
-      int endIndex = input.indexOf('}', startIndex);
+    String processed;
 
-      if (endIndex == -1) break; // No closing brace found
-
-      String jsonString = input.substring(startIndex, endIndex + 1);
-
-      try {
-        // Decode the JSON string to a Map
-        Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-
-        // Attempt to parse and standardize the duration
-        if (jsonMap.containsKey('duration')) {
-          jsonMap['duration'] = standardizeDuration(jsonMap['duration']);
-        }
-
-        // Encode the modified Map back to a JSON string
-        String modifiedJsonString = jsonEncode(jsonMap);
-        jsonStrings.add(modifiedJsonString);
-      } catch (e) {
-        print('Error decoding or processing JSON: $e');
-      }
-
-      startIndex = endIndex + 1; // Move past the current JSON object
-    }
-
-    return jsonStrings.isNotEmpty ? jsonStrings : ['No JSON found'];
-  }
-
-
-  String standardizeDuration(dynamic duration) {
-    if (duration is String) {
-      if (duration.contains(':')) {
-        // Handle "X:Y" or "X:YY" format
-        List<String> parts = duration.split(':');
-        if (parts.length == 2) {
-          int hours = int.tryParse(parts[0]) ?? 0;
-          int minutes = int.tryParse(parts[1]) ?? 0;  // Handle missing or invalid minutes
-          return '$hours:${minutes.toString().padLeft(2, '0')}'; // Standardize to "X:YY"
-        } else {
-          return 'Invalid Duration Format'; // More than two parts
-        }
-      } else {
-        // Handle just "X" format (assume hours)
-        int hours = int.tryParse(duration) ?? 0;
-        return '$hours:00'; // Standardize to "X:00"
-      }
-    } else if (duration is int) {
-      // Handle integer duration (assume hours)
-      return '$duration:00';
+    if (firstBracket != -1 && lastBracket != -1) {
+      // Extract content between first [ and last ]
+      processed = trimmed.substring(firstBracket, lastBracket + 1);
+    } else if (firstBracket != -1) {
+      // Add missing closing bracket
+      processed = '${trimmed.substring(firstBracket)}]';
+    } else if (lastBracket != -1) {
+      // Add missing opening bracket
+      processed = '[${trimmed.substring(0, lastBracket + 1)}]';
     } else {
-      return 'Invalid Duration Type'; // Not a string or int
+      // Wrap entirely if no brackets
+      processed = '[$trimmed]';
     }
+
+    // Final validation to ensure brackets exist
+    if (!processed.startsWith('[')) processed = '[$processed';
+    if (!processed.endsWith(']')) processed = '$processed]';
+
+    return processed;
   }
 }
