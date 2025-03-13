@@ -13,6 +13,7 @@ import 'EventDatabase.dart'; // Import your EventDatabase
 import 'package:intl/intl.dart';
 import 'TimeOfDayFunc.dart';
 import 'speech_to_text.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'CameraView.dart';
 
 enum CalendarType { week, month }
@@ -33,13 +34,13 @@ class _CalendarViewState extends State<CalendarView> {
   //==Replace showDialog with OverlayEntry==================================================================================================================
   //==============================================================================================================================
   OverlayEntry? _overlayEntry;
-
+  SpeechText st= SpeechText();
   String spokenWords = "new words";
-
+  bool isSpeaking = false;
   void _showSpeechOverlay(BuildContext context) {
-
+    st=SpeechText();
     _overlayEntry = OverlayEntry(
-      builder: (context) => SpeechText(),
+      builder: (context) => st,
     );
 
 
@@ -52,6 +53,7 @@ class _CalendarViewState extends State<CalendarView> {
       _overlayEntry!.remove();
       _overlayEntry = null;
     }
+    st.stopListening.call();
     spokenWords = SpeechText.wordSpoken;
     // Open confirm view after this
     PassRequirementsToAI(context);
@@ -320,18 +322,25 @@ class _CalendarViewState extends State<CalendarView> {
                GestureDetector(
                 onLongPressStart: (details) {
                   print("I am speaking");
+                  setState(() => isSpeaking = true);
                   _showSpeechOverlay(context);
                 },
                 onLongPressEnd: (details) {
                   // Close the dialog when the user releases the mic button
-
                   print("Stop speaking");
+                  setState(() => isSpeaking = false);
                   _closeSpeechOverlay();
                 },
-                child: FloatingActionButton(
-                  onPressed: null,
-                  child: Icon(Icons.mic),
-                ),
+                 child: AvatarGlow(
+                   animate: isSpeaking,
+                   glowColor: Colors.blue, // Customize glow color
+                   duration: const Duration(milliseconds: 2000),
+                   repeat: true,
+                   child: FloatingActionButton(
+                     onPressed: null,
+                     child: Icon(Icons.mic),
+                   ),
+                 ),
               ),
               SizedBox(width: 10), // Add spacing between buttons
 
@@ -511,21 +520,26 @@ class _CalendarViewState extends State<CalendarView> {
             );
           },
         ),
-
         floatingActionButton: Padding(
           padding: EdgeInsets.only(left: 30),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              // Mic button
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SpeechText()),
-                  );
+              GestureDetector(
+                onLongPressStart: (details) {
+                  print("I am speaking");
+                  _showSpeechOverlay(context);
                 },
-                child: Icon(Icons.mic),
+                onLongPressEnd: (details) {
+                  // Close the dialog when the user releases the mic button
+
+                  print("Stop speaking");
+                  _closeSpeechOverlay();
+                },
+                child: FloatingActionButton(
+                  onPressed: null,
+                  child: Icon(Icons.mic),
+                ),
               ),
               SizedBox(width: 10), // Add spacing between buttons
 
@@ -545,17 +559,18 @@ class _CalendarViewState extends State<CalendarView> {
                 child: Icon(Icons.camera_alt),
               ),
               Expanded(child: Container()),
-
-              // Existing Add button
               FloatingActionButton(
                 onPressed: () async {
-                  SelectedDate.date = DateTime.now();
+                  SelectedDate.date = DateTime
+                      .now(); // update the selected date time to now, as users are usually looking at today's week
+                  // Navigate and add event
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AddEvent(eventDatabase: db)),
+                        builder: (context) =>
+                            AddEvent(eventDatabase: db)), // Pass eventDatabase
                   );
-                  _loadEvents();
+                  _loadEvents(); // Reload events after adding a new one
                 },
                 child: Icon(Icons.add),
               ),
