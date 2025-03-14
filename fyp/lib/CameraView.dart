@@ -128,17 +128,47 @@ class _CameraViewState extends State<CameraView> {
 
   Future<void> _selectFromGallery() async {
     try {
+      setState(() => _showCaptureFeedback = true);
+
       final pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
       );
 
       if (pickedFile != null) {
         print('Selected image path: ${pickedFile.path}');
+        CameraView.Photopath = pickedFile.path;
         _showSuccess('Image selected from gallery');
         // You can add your image handling logic here
+
+        // 2. Show preview screen
+        if (!mounted) return;
+
+        final confirmed = await Navigator.push<bool>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PhotoPreviewScreen(
+              imagePath: CameraView.Photopath,
+              onConfirm: OnConfirm,
+              onRetake: () => Navigator.pop(context, false),
+            ),
+          ),
+        );
+
+        // 3. Handle confirmation or retake
+        if (confirmed ?? false) {
+          _showSuccess('Photo saved successfully!');
+          // Add your photo saving logic here
+        } else {
+          _showSuccess('Photo discarded');
+        }
+
       }
     } catch (e) {
       _showError('Failed to select image: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() => _showCaptureFeedback = false);
+      }
     }
   }
 
