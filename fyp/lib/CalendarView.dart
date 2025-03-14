@@ -596,20 +596,36 @@ class _CalendarViewState extends State<CalendarView> {
               SizedBox(width: 10), // Add spacing between buttons
 
               // New Camera button
-              FloatingActionButton(
-                // In your floating action button's onPressed:
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CameraView(
-                        PassPhotoToAI: () => passPhotoToAI(), // Add async if needed
-                      ),
+          FloatingActionButton(
+            onPressed: () async {
+              // Show the choice dialog and wait for the user's selection
+              String? choice = await showChoiceDialog(context);
+
+              if (choice == "Camera") {
+                // Open the CameraView
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CameraView(
+                      PassPhotoToAI: () => passPhotoToAI(), // Your callback function
                     ),
-                  );
-                },
-                child: Icon(Icons.camera_alt),
-              ),
+                  ),
+                );
+              } else if (choice == "Gallery") {
+                // Handle gallery selection
+                final pickedFile = await ImagePicker().pickImage(
+                  source: ImageSource.gallery,
+                );
+                if (pickedFile != null) {
+                  // Process the selected image
+                  print('Selected image path: ${pickedFile.path}');
+                  CameraView.Photopath = pickedFile.path;
+                  passPhotoToAI();
+                }
+              }
+            },
+            child: Icon(Icons.camera_alt),
+          ),
               Expanded(child: Container()),
               FloatingActionButton(
                 onPressed: () async {
