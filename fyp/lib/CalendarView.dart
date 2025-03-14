@@ -404,6 +404,8 @@ class _CalendarViewState extends State<CalendarView> {
                     if (pickedFile != null) {
                       // Process the selected image
                       print('Selected image path: ${pickedFile.path}');
+                      CameraView.Photopath = pickedFile.path;
+                      passPhotoToAI();
                     }
                   }
                 },
