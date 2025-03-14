@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:fyp/EventJsonUtils.dart';
 import 'package:fyp/EventNavigator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'AddEvent.dart';
 import 'ConfirmView.dart';
 import 'EditEvent.dart';
@@ -172,6 +173,58 @@ class _CalendarViewState extends State<CalendarView> {
     });
   }
 
+  ///
+  /// THis is camera view choice alert dialogue
+  /// returns different string according to choice, then open different camera view.
+  ///
+  Future<String?> showChoiceDialog(BuildContext context) async {
+    return await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Photo Select Option",
+            style: TextStyle(
+              color: Colors.blueAccent,
+              fontSize: 20,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Open Camera"),
+                onTap: () {
+                  Navigator.pop(context, "Camera"); // Return "Camera" as the choice
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text("Select from Gallery"),
+                onTap: () {
+                  Navigator.pop(context, "Gallery"); // Return "Gallery" as the choice
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog without returning a value
+              },
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  ///
+  /// THis is the end of camera view choice alert dialogue
+  ///
+
   @override
   Widget build(BuildContext context) {
     switch (type) {
@@ -188,9 +241,9 @@ class _CalendarViewState extends State<CalendarView> {
     }
   }
 
-  //==============================================================================================================================
-  //==Month View==================================================================================================================
-  //==============================================================================================================================
+  ///==============================================================================================================================
+  ///==Month View==================================================================================================================
+  ///==============================================================================================================================
 
   MaterialApp buildMonthViewApp() {
     return MaterialApp(
@@ -207,23 +260,6 @@ class _CalendarViewState extends State<CalendarView> {
                 log("Change to week calendar");
               },
             ),
-
-            /// TEST /////// TEST /////// TEST ////
-            IconButton(
-              icon: Icon(Icons.directions_run),
-              onPressed: () async {
-                // Navigate and add event
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ConfirmView(
-                            events: db.getEventList(), loadEventCallback: _loadEvents,)) // Pass eventDatabase, event chosen
-                    );
-                _loadEvents(); // Reload events after adding a new one
-              },
-            ),
-
-            /// TEST /////// TEST /////// TEST ////
           ],
         ),
         body: MonthView(
@@ -346,16 +382,30 @@ class _CalendarViewState extends State<CalendarView> {
 
               // New Camera button
               FloatingActionButton(
-                // In your floating action button's onPressed:
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CameraView(
-                        PassPhotoToAI: () => passPhotoToAI(), // Add async if needed
+                onPressed: () async {
+                  // Show the choice dialog and wait for the user's selection
+                  String? choice = await showChoiceDialog(context);
+
+                  if (choice == "Camera") {
+                    // Open the CameraView
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CameraView(
+                          PassPhotoToAI: () => passPhotoToAI(), // Your callback function
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else if (choice == "Gallery") {
+                    // Handle gallery selection
+                    final pickedFile = await ImagePicker().pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    if (pickedFile != null) {
+                      // Process the selected image
+                      print('Selected image path: ${pickedFile.path}');
+                    }
+                  }
                 },
                 child: Icon(Icons.camera_alt),
               ),
@@ -381,9 +431,9 @@ class _CalendarViewState extends State<CalendarView> {
     );
   }
 
-  //==============================================================================================================================
-  //==Week View===================================================================================================================
-  //==============================================================================================================================
+  ///==============================================================================================================================
+  ///==Week View===================================================================================================================
+  ///==============================================================================================================================
 
   MaterialApp buildWeekViewApp() {
     return MaterialApp(
