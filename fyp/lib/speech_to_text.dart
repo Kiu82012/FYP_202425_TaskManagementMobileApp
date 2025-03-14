@@ -6,12 +6,12 @@ import 'package:speech_to_text_continuous/speech_to_text.dart';
 class SpeechText extends StatefulWidget {
   SpeechText({super.key});
   late Function() stopListening;
-  final _SpeechToTextState state = _SpeechToTextState();
+
 
   static String wordSpoken = " hihihih";
 
   @override
-  State<SpeechText> createState() => state;
+  State<SpeechText> createState() =>_SpeechToTextState();
 
 
 }
@@ -24,7 +24,6 @@ class _SpeechToTextState extends State<SpeechText> {
 
   @override
   void initState() {
-
     super.initState();
     widget.stopListening= _stopListening;
     _initSpeech().then((_) {
@@ -34,7 +33,7 @@ class _SpeechToTextState extends State<SpeechText> {
     });
   }
 
-  Future<void> _initSpeech() async { // 改為異步初始化
+  Future<void> _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
     setState(() {});
   }
@@ -51,7 +50,6 @@ class _SpeechToTextState extends State<SpeechText> {
         onResult: _onSpeechResult,
         listenFor: const Duration(minutes:5), // Extended duration if needed
         pauseFor: const Duration(seconds: 20),
-
       );
     }
   }
@@ -65,13 +63,16 @@ class _SpeechToTextState extends State<SpeechText> {
   }
 
   void _onSpeechResult(SpeechRecognitionResult result) {
-    setState(() {
-      String newWords = result.recognizedWords.replaceFirst(_lastRecognized, "").trim();
-      if (newWords.isNotEmpty) {
-        SpeechText.wordSpoken += " " + newWords; // Append only new words
-      }
-      _lastRecognized = result.recognizedWords; // Update last processed text
-    });
+    if (mounted) {
+      setState(() {
+        String newWords = result.recognizedWords.replaceFirst(
+            _lastRecognized, "").trim();
+        if (newWords.isNotEmpty) {
+          SpeechText.wordSpoken += " " + newWords; // Append only new words
+        }
+        _lastRecognized = result.recognizedWords; // Update last processed text
+      });
+    }
   }
 
   @override

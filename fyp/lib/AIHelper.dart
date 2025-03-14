@@ -3,7 +3,7 @@ import 'dart:io';
 
 class AIHelper {
   static const String _apiKey = 'AIzaSyChwh8mhEpIwXKCwqjJ4uRmFKanYISbw3w'; // Replace with your API key
-  static const String _modelName = 'gemini-1.5-flash'; // Use the appropriate model for text
+  static const String _modelName = 'gemini-2.0-flash'; // Use the appropriate model for text
   static const String _visionModelName = 'gemini-1.5-flash'; // Use the appropriate model for text-and-image
 
   // Function to get a text-based response from the AI
