@@ -25,6 +25,7 @@ class EventJsonUtils{
           'startTime' : "${event.startTime?.hour.toString()}:${event.startTime?.minute.toString()}",
           'endTime' : "${event.endTime?.hour.toString()}:${event.endTime?.minute.toString()}",
           'duration' : event.duration?.inHours.toString(),
+          'description' : event.description,
         }
       );
     }

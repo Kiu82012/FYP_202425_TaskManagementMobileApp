@@ -21,19 +21,21 @@ class EditListEvent extends StatefulWidget {
 class _EditListEventState extends State<EditListEvent> {
   final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
+  final _eventDescController = TextEditingController();
 
   late Function(Event) onRemove;
   late Function(Event) onAdd;
 
   List<Event> eventList = [];
 
-  Event oldEvent = Event(name: "default", date: DateTime.now());
+  Event oldEvent = Event(name: "default", date: DateTime.now(), description: "");
 
   String _selectedName = "";
   DateTime? _selectedDate;
   TimeOfDay? _selectedStartTime;
   TimeOfDay? _selectedEndTime;
   Duration? _selectedDuration;
+  String _selectedDescription = "";
 
   @override
   void initState() {
@@ -51,11 +53,13 @@ class _EditListEventState extends State<EditListEvent> {
     _selectedStartTime = widget.selectedEvent.startTime;
     _selectedEndTime = widget.selectedEvent.endTime;
     _selectedDuration = widget.selectedEvent.duration;
+    _selectedDescription = widget.selectedEvent.description;
   }
 
   @override
   void dispose() {
     _eventNameController.dispose();
+    _eventDescController.dispose();
     super.dispose();
   }
 
@@ -110,6 +114,7 @@ class _EditListEventState extends State<EditListEvent> {
           startTime: _selectedStartTime,
           endTime: _selectedEndTime,
           duration: _selectedDuration,
+          description: _eventDescController.text,
         );
 
         onAdd(newEvent);
@@ -128,6 +133,7 @@ class _EditListEventState extends State<EditListEvent> {
 
     // set default value of text
     _eventNameController.text = _selectedName;
+    _eventDescController.text = _selectedDescription;
 
     return Scaffold(
       appBar: AppBar(
@@ -300,6 +306,39 @@ class _EditListEventState extends State<EditListEvent> {
                     ),
                     icon: const Icon(Icons.punch_clock),
                     label: Text("select"),
+                  ),
+                ],
+              ),
+              //==========================================\\
+              //===============Description================\\
+              //==========================================\\
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(2.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Description:',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          SizedBox(height: 8),
+                          TextField(
+                            controller: _eventDescController,  // Use the class-level controller
+                            maxLines: 5,
+                            decoration: InputDecoration(
+                              hintText: 'Enter description...',
+                              hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.all(12),
+                            ),
+                            keyboardType: TextInputType.multiline,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

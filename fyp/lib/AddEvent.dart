@@ -18,6 +18,7 @@ class AddEvent extends StatefulWidget {
 class _AddEventState extends State<AddEvent> {
   final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
+  final _eventDescController = TextEditingController();
 
   // Data
   DateTime? _selectedDate = SelectedDate.date;
@@ -28,6 +29,7 @@ class _AddEventState extends State<AddEvent> {
   @override
   void dispose() {
     _eventNameController.dispose();
+    _eventDescController.dispose();
     super.dispose();
   }
 
@@ -78,6 +80,7 @@ class _AddEventState extends State<AddEvent> {
         startTime: _selectedStartTime!,
         endTime: _selectedEndTime!,
         duration: _selectedDuration!,
+        description: _eventDescController.text,
       );
 
       EventDatabase db = EventDatabase();
@@ -219,7 +222,6 @@ class _AddEventState extends State<AddEvent> {
                       style: TextStyle(
                         color: Colors.blueGrey,
                         fontSize: 24,
-
                       ),
                     ),
                   ),
@@ -230,6 +232,39 @@ class _AddEventState extends State<AddEvent> {
                     ),
                     icon: const Icon(Icons.punch_clock),
                     label: Text("select"),
+                  ),
+                ],
+              ),
+              //==========================================\\
+              //===============Description================\\
+              //==========================================\\
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(2.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Description:',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          SizedBox(height: 8),
+                          TextField(
+                            controller: _eventDescController,  // Use the class-level controller
+                            maxLines: 5,
+                            decoration: InputDecoration(
+                              hintText: 'Enter description...',
+                              hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.all(12),
+                            ),
+                            keyboardType: TextInputType.multiline,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

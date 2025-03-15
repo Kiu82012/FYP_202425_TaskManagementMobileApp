@@ -23,12 +23,16 @@ class Event {
   @HiveField(4)
   final Duration? duration;
 
+  @HiveField(5)
+  final String description;
+
   Event({
     required this.name,
     required this.date,
     this.startTime,
     this.endTime,
     this.duration,
+    required this.description,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -56,12 +60,15 @@ class Event {
       minutes: int.parse(formattedDuration.split(':')[1]),
     );
 
+    String description = json['description'];
+
     return Event(
       name: name,
       date: date,
       startTime: startTime,
       endTime: endTime,
       duration: duration,
+      description: description,
     );
   }
 
