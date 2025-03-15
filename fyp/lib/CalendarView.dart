@@ -75,9 +75,28 @@ class _CalendarViewState extends State<CalendarView> {
     EventJsonUtils util = EventJsonUtils();
     List<Event> newEventList = util.jsonToEvent(newEventListJson);
 
+    // Empty List Check
+    if (newEventList.isEmpty) {
+      log("Fail to identify any event");
+
+      // Show the empty list snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Fail to identify any event. Speech must be clear and precise.'),
+          duration: Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        ),
+      );
+
+      Navigator.of(context).pop();
+      return;
+    }
 
     print("Listing events into confirm view...");
-    // Navigate to ConfirmView and play valorant
+
+    // Navigate to ConfirmView
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -679,7 +698,26 @@ class _CalendarViewState extends State<CalendarView> {
           File(CameraView.Photopath), db);
       EventJsonUtils ForPhoto = EventJsonUtils();
       List<Event> Photoevent = ForPhoto.jsonToEvent(json);
-      if (mounted) {
+
+      // Empty List Check
+      if (Photoevent.isEmpty){
+        log("Fail to identify any event");
+
+        // Show the empty list snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fail to identify any event. Photo must be clear and precise.'),
+            duration: Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          ),
+        );
+
+
+        return;
+      }
+
+      if (mounted) { // not yet dispose
         Navigator.push(
           context,
           MaterialPageRoute(
