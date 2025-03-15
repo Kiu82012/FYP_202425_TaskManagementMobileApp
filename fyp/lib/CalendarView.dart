@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:fyp/EventJsonUtils.dart';
 import 'package:fyp/EventNavigator.dart';
+import 'package:fyp/loadingPage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'AddEvent.dart';
 import 'ConfirmView.dart';
@@ -35,11 +36,11 @@ class _CalendarViewState extends State<CalendarView> {
   //==Replace showDialog with OverlayEntry==================================================================================================================
   //==============================================================================================================================
   OverlayEntry? _overlayEntry;
-  SpeechText st= SpeechText();
+  SpeechText st = SpeechText();
   String spokenWords = "new words";
   bool isSpeaking = false;
   void _showSpeechOverlay(BuildContext context) {
-    st=SpeechText();
+    st = SpeechText();
     _overlayEntry = OverlayEntry(
       builder: (context) => st,
     );
@@ -58,12 +59,16 @@ class _CalendarViewState extends State<CalendarView> {
     spokenWords = SpeechText.wordSpoken;
     // Open confirm view after this
     PassRequirementsToAI(context);
+    showDialog(context: context, builder: (context){
+      return Center(child: LoadingPage(),);
+    });
   }
 
   void PassRequirementsToAI(BuildContext context) async {
     print("Passing Requirements to AI...");
     // Generate Event using AI
-    String newEventListJson = await EventNavigator.generateEvent(spokenWords, db);
+    String newEventListJson =
+        await EventNavigator.generateEvent(spokenWords, db);
 
     print("Converting json into events...");
     // Turn json format into event list
@@ -76,9 +81,11 @@ class _CalendarViewState extends State<CalendarView> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ConfirmView(events: newEventList, loadEventCallback: _loadEvents),
+        builder: (context) =>
+            ConfirmView(events: newEventList, loadEventCallback: _loadEvents),
       ),
     );
+    Navigator.of(context).pop();
   }
 
   //==============================================================================================================================
@@ -260,6 +267,23 @@ class _CalendarViewState extends State<CalendarView> {
                 log("Change to week calendar");
               },
             ),
+
+            /// TEST /////// TEST /////// TEST ////
+            IconButton(
+              icon: Icon(Icons.directions_run),
+              onPressed: () async {
+                // Navigate and add event
+                await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ConfirmView(
+                            events: db.getEventList(), loadEventCallback: _loadEvents,)) // Pass eventDatabase, event chosen
+                    );
+                _loadEvents(); // Reload events after adding a new one
+              },
+            ),
+
+            /// TEST /////// TEST /////// TEST ////
           ],
         ),
         body: MonthView(
@@ -355,7 +379,7 @@ class _CalendarViewState extends State<CalendarView> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-               GestureDetector(
+              GestureDetector(
                 onLongPressStart: (details) {
                   print("I am speaking");
                   setState(() => isSpeaking = true);
@@ -367,16 +391,16 @@ class _CalendarViewState extends State<CalendarView> {
                   setState(() => isSpeaking = false);
                   _closeSpeechOverlay();
                 },
-                 child: AvatarGlow(
-                   animate: isSpeaking,
-                   glowColor: Colors.blue, // Customize glow color
-                   duration: const Duration(milliseconds: 2000),
-                   repeat: true,
-                   child: FloatingActionButton(
-                     onPressed: null,
-                     child: Icon(Icons.mic),
-                   ),
-                 ),
+                child: AvatarGlow(
+                  animate: isSpeaking,
+                  glowColor: Colors.blue, // Customize glow color
+                  duration: const Duration(milliseconds: 2000),
+                  repeat: true,
+                  child: FloatingActionButton(
+                    onPressed: null,
+                    child: Icon(Icons.mic),
+                  ),
+                ),
               ),
               SizedBox(width: 10), // Add spacing between buttons
 
@@ -651,7 +675,8 @@ class _CalendarViewState extends State<CalendarView> {
 
   Future<void> passPhotoToAI() async {
     try {
-      String json = await EventNavigator.generateEventByPhoto(File(CameraView.Photopath), db);
+      String json = await EventNavigator.generateEventByPhoto(
+          File(CameraView.Photopath), db);
       EventJsonUtils ForPhoto = EventJsonUtils();
       List<Event> Photoevent = ForPhoto.jsonToEvent(json);
       if (mounted) {
