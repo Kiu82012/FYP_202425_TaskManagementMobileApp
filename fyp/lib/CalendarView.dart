@@ -43,6 +43,7 @@ class _CalendarViewState extends State<CalendarView> {
       _overlayEntry = null;
     }
   }
+
   //==============================================================================================================================
   //==Replace showDialog with OverlayEntry==================================================================================================================
   //==============================================================================================================================
@@ -63,8 +64,7 @@ class _CalendarViewState extends State<CalendarView> {
   @override
   void dispose() {
     super.dispose();
-    _saveEvents;
-    ();
+    _saveEvents();
   }
 
   List<CalendarEventData> eventDataList = [];
@@ -114,9 +114,9 @@ class _CalendarViewState extends State<CalendarView> {
     List<Event> events = db.getEventList();
     List<Event> selectedEvents = events
         .where((event) =>
-            event.date.year == selectedDate.year &&
-            event.date.month == selectedDate.month &&
-            event.date.day == selectedDate.day)
+    event.date.year == selectedDate.year &&
+        event.date.month == selectedDate.month &&
+        event.date.day == selectedDate.day)
         .toList();
     selectedEvents.forEach((event) {
       print("${event.name} - ${event.startTime?.Format()}");
@@ -133,6 +133,20 @@ class _CalendarViewState extends State<CalendarView> {
     setState(() {
       type = newType; // Update the calendar type
     });
+  }
+
+  // Helper function to convert TimeOfDay to DateTime
+  DateTime _timeOfDayToDateTime(TimeOfDay? time) {
+    if (time == null) {
+      return DateTime.now(); // Fallback to current time if time is null
+    }
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, time.hour, time.minute);
+  }
+
+  // Helper function to format DateTime as a string
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('h:mm a').format(dateTime); // Example: 10:00 AM
   }
 
   @override
@@ -182,7 +196,7 @@ class _CalendarViewState extends State<CalendarView> {
                         builder: (context) => ConfirmView(
                             events: db
                                 .getEventList())) // Pass eventDatabase, event chosen
-                    );
+                );
                 _loadEvents(); // Reload events after adding a new one
               },
             ),
@@ -197,7 +211,7 @@ class _CalendarViewState extends State<CalendarView> {
           showWeekTileBorder: true,
           onCellTap: (events, date) async {
             List<Event> selectedEvents =
-                _loadEventsOnDate(date); // Load events for the selected date
+            _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -207,7 +221,7 @@ class _CalendarViewState extends State<CalendarView> {
                       Text("Events on ${date.day}/${date.month}:"),
                       SizedBox(
                           width:
-                              45), // Add spacing between title and FloatingActionButton
+                          45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date =
@@ -231,34 +245,42 @@ class _CalendarViewState extends State<CalendarView> {
                   ),
                   content: Container(
                     width: double.maxFinite,
-                    height: 200,
+                    height: 200, // Fixed height for the outer container (optional)
                     child: ListView.builder(
                       padding: const EdgeInsets.all(8),
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
                         Event event = selectedEvents[index];
-                        return Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextButton(
-                            onPressed: () async {
-                              // Navigate and add event
-                              Navigator.of(context).pop();
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
+                        return IntrinsicHeight( // Make the height flexible
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: TextButton(
+                              onPressed: () async {
+                                // Navigate and add event
+                                Navigator.of(context).pop();
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
                                     builder: (context) => EditEvent(
-                                          eventDatabase: db,
-                                          selectedEvent: event,
-                                        )), // Pass eventDatabase, event chosen
-                              );
-                              _loadEvents(); // Reload events after adding a new one
-                            },
-                            child: Text(
-                                "${event.name} - ${event.startTime?.Format()}"),
+                                      eventDatabase: db,
+                                      selectedEvent: event,
+                                    ),
+                                  ), // Pass eventDatabase, event chosen
+                                );
+                                _loadEvents(); // Reload events after adding a new one
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8), // Add padding for better spacing
+                                child: Text(
+                                  "${event.name} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime))} to ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))} - Duration: ${event.duration?.inHours ?? 0}h ${event.duration?.inMinutes.remainder(60) ?? 0}m",
+                                  maxLines: 2, // Allow text to wrap to a second line if needed
+                                  overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+                                ),
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -283,7 +305,7 @@ class _CalendarViewState extends State<CalendarView> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-               GestureDetector(
+              GestureDetector(
                 onLongPressStart: (details) {
                   print("I am speaking");
                   _showSpeechOverlay(context);
@@ -354,7 +376,7 @@ class _CalendarViewState extends State<CalendarView> {
           onEventTap: (events, date) {
             // Modified to handle event taps
             List<Event> selectedEvents =
-                _loadEventsOnDate(date); // Load events for the selected date
+            _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -364,7 +386,7 @@ class _CalendarViewState extends State<CalendarView> {
                       Text("Events on ${date.day}/${date.month}:"),
                       SizedBox(
                           width:
-                              45), // Add spacing between title and FloatingActionButton
+                          45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date =
@@ -408,9 +430,9 @@ class _CalendarViewState extends State<CalendarView> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => EditEvent(
-                                          eventDatabase: db,
-                                          selectedEvent: event,
-                                        )), // Pass eventDatabase, event chosen
+                                      eventDatabase: db,
+                                      selectedEvent: event,
+                                    )), // Pass eventDatabase, event chosen
                               );
                               _loadEvents(); // Reload events after adding a new one
                             },
