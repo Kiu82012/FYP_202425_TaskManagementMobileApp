@@ -429,6 +429,9 @@ class _CalendarViewState extends State<CalendarView> {
                       // Process the selected image
                       print('Selected image path: ${pickedFile.path}');
                       CameraView.Photopath = pickedFile.path;
+                      showDialog(context: context, builder: (context){
+                        return Center(child: LoadingPage(),);
+                      });
                       passPhotoToAI();
                     }
                   }
@@ -644,6 +647,9 @@ class _CalendarViewState extends State<CalendarView> {
                   // Process the selected image
                   print('Selected image path: ${pickedFile.path}');
                   CameraView.Photopath = pickedFile.path;
+                  showDialog(context: context, builder: (context){
+                    return Center(child: LoadingPage(),);
+                  });
                   passPhotoToAI();
                 }
               }
@@ -680,6 +686,7 @@ class _CalendarViewState extends State<CalendarView> {
       EventJsonUtils ForPhoto = EventJsonUtils();
       List<Event> Photoevent = ForPhoto.jsonToEvent(json);
       if (mounted) {
+        Navigator.of(context).pop(); //to remove loading page
         Navigator.push(
           context,
           MaterialPageRoute(

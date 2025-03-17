@@ -5,6 +5,7 @@ import 'package:fyp/ConfirmView.dart';
 import 'package:fyp/Event.dart';
 import 'package:fyp/EventJsonUtils.dart';
 import 'package:fyp/EventNavigator.dart';
+import 'package:fyp/loadingPage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -63,9 +64,11 @@ class _CameraViewState extends State<CameraView> {
     Navigator.pop(context); // Return to the previous screen
   }
 
-  void OnConfirm() {
+  void OnConfirm(){
+    showDialog(context: context, builder: (context){
+      return Center(child: LoadingPage(),);
+    });
     widget.PassPhotoToAI();
-    Navigator.pop(context, true);
   }
 
   Future<void> _takePhoto() async {
