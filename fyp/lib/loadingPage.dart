@@ -1,35 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:loading_indicator/loading_indicator.dart';
+import 'package:lottie/lottie.dart'; // Import the Lottie package
 
 class LoadingPage extends StatelessWidget {
+  final String lottieAsset;  // Add a parameter for the Lottie asset path
 
-  const LoadingPage({Key? key}) : super(key: key);
-
+  const LoadingPage({Key? key, required this.lottieAsset}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent, // Make the background transparent
       body: Container(
-        color: Colors.cyan.withOpacity(0.5), // Semi-transparent background
+        color: Colors.blueGrey.withOpacity(0.5), // Semi-transparent background
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Processing...',
+                'Generating event...',
                 style: TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 20),
               SizedBox(
-                width: 100, // Adjust size as needed
-                height: 100,
-                child: LoadingIndicator(
-                  indicatorType: Indicator.pacman,
-                  colors: const [Colors.yellow],
-                  strokeWidth: 10,
-                  backgroundColor: Colors.transparent, // Transparent background
-                  pathBackgroundColor: Colors.transparent, // Transparent path
+                width: 200, // Adjust size as needed
+                height: 200,
+                child: Lottie.asset(
+                  lottieAsset, // Use the Lottie asset path
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.contain, // Adjust fit as needed
                 ),
               ),
             ],

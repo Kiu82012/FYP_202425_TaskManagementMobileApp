@@ -18,7 +18,7 @@ class EventDatabase {
     saveEvents();
   }
 
-  void deleteEvent(Event event) {
+  Future<void> deleteEvent(Event event) async {
     _events.remove(event);
     print("events are deleted");
     saveEvents();

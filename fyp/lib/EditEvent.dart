@@ -5,6 +5,8 @@ import 'package:fyp/DurationFunc.dart';
 import 'package:fyp/StringFuncs.dart';
 import 'Event.dart';
 import 'EventDatabase.dart';
+import 'package:lottie/lottie.dart';
+import 'dart:async';
 
 class EditEvent extends StatefulWidget {
   final EventDatabase eventDatabase;
@@ -115,13 +117,40 @@ class _EditEventState extends State<EditEvent> {
     }
   }
 
-  void _deleteEvent(){
+  void _deleteEvent(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
+      // Show the Lottie animation
+      showDialog(
+        context: context,
+        barrierDismissible: false, // Prevent dismissing by tapping outside
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Lottie.asset(
+                  'assets/delete_animation2.json', // Replace with your Lottie asset
+                  width: 200,
+                  height: 200,
+                  repeat: false, // Play only once
+                ),
+                const SizedBox(height: 16),
+                const Text('Deleting event...'), // Optional message
+              ],
+            ),
+          );
+        },
+      );
+      // Perform the deletion and navigate after a delay
       EventDatabase db = EventDatabase();
-      db.deleteEvent(oldEvent);
+      await db.deleteEvent(oldEvent); // Await the deletion
 
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
+      // Delay for a few seconds to show the animation
+      Timer(const Duration(seconds: 2), () {
+        Navigator.of(context).pop(); // Close the animation dialog
+        Navigator.of(context).pop(); // Pop the current page
+        Navigator.of(context).pop(); // Pop the previous page (if needed)
+      });
     }
   }
 
@@ -155,7 +184,7 @@ class _EditEventState extends State<EditEvent> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteEvent();
+                          _deleteEvent(context);
                         },
                       ),
                       TextButton(

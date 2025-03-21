@@ -59,9 +59,12 @@ class _CalendarViewState extends State<CalendarView> {
     spokenWords = SpeechText.wordSpoken;
     // Open confirm view after this
     PassRequirementsToAI(context);
-    showDialog(context: context, builder: (context){
-      return Center(child: LoadingPage(),);
-    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+      ),
+    );
   }
 
   void PassRequirementsToAI(BuildContext context) async {
@@ -306,6 +309,34 @@ class _CalendarViewState extends State<CalendarView> {
           ],
         ),
         body: MonthView(
+          cellBuilder: (date, events,isToday,isInMonth,hideDaysNotInMonth) {
+            return Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Display day number
+                  Text(date.day.toString()),
+                  // Display custom event widgets
+                  ...events.map((event) {
+                    // Cast to your custom event type
+                    return Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      padding: EdgeInsets.all(4),
+                      color: event.color, // Use event-specific color
+                      child: Text(
+                        event.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+            );
+          },
           controller: eventController,
           startDay: WeekDays.sunday,
           cellAspectRatio: 0.65,
@@ -339,8 +370,7 @@ class _CalendarViewState extends State<CalendarView> {
                           );
                           _loadEvents(); // Reload events after adding a new one
                         },
-                        backgroundColor: Colors.lightBlue,
-                        child: Icon(Icons.add, color: Colors.white),
+                        child: Icon(Icons.add),
                       ),
                     ],
                   ),
@@ -352,13 +382,22 @@ class _CalendarViewState extends State<CalendarView> {
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
                         Event event = selectedEvents[index];
-                        return Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                        color: Colors.lightBlue[50],
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(
+                        color: Colors.grey[400]!,
+                        width: 1.7,
+                        ),
+                        ),
                           child: TextButton(
+                            style:ButtonStyle(
+                              foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                            ),
                             onPressed: () async {
                               // Navigate and add event
                               Navigator.of(context).pop();
@@ -374,8 +413,11 @@ class _CalendarViewState extends State<CalendarView> {
                             },
                             child: Text(
                                 "${event.name} - ${event.startTime?.Format()}"),
+
                           ),
+                        )
                         );
+
                       },
                     ),
                   ),
@@ -499,25 +541,32 @@ class _CalendarViewState extends State<CalendarView> {
         ),
         body: WeekView(
           eventTileBuilder: (date, events, boundary, start, end) {
-            return SingleChildScrollView(
-              child: Container(
-                height: boundary.height,
-                decoration: BoxDecoration(
-                  color: Colors.blue[400],
-                  borderRadius: BorderRadius.circular(10.0),
+            return Container( // Remove SingleChildScrollView
+              height: boundary.height,
+              decoration: BoxDecoration(
+                color: Colors.lightBlue[50],
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: Colors.grey[400]!,
+                  width: 1.7,
                 ),
+              ),
+              child: SingleChildScrollView(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: events.map((event) {
                     return Container(
-                      padding: EdgeInsets.all(3.0),
+                      padding: const EdgeInsets.all(3.0),
                       child: Text(
                         event.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14.0,
                           fontWeight: FontWeight.normal,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                         textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
                       ),
                     );
                   }).toList(),
@@ -575,30 +624,42 @@ class _CalendarViewState extends State<CalendarView> {
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
                         Event event = selectedEvents[index];
-                        return Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextButton(
-                            onPressed: () async {
-                              // Navigate and add event
-                              Navigator.of(context).pop();
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditEvent(
+                        return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Container(
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.lightBlue[50],
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(
+                                  color: Colors.grey[400]!,
+                                  width: 1.7,
+                                ),
+                              ),
+                              child: TextButton(
+                                style:ButtonStyle(
+                                  foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                                ),
+                                onPressed: () async {
+                                  // Navigate and add event
+                                  Navigator.of(context).pop();
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EditEvent(
                                           eventDatabase: db,
                                           selectedEvent: event,
                                         )), // Pass eventDatabase, event chosen
-                              );
-                              _loadEvents(); // Reload events after adding a new one
-                            },
-                            child: Text(
-                                "${event.name} - ${event.startTime?.Format()}"),
-                          ),
+                                  );
+                                  _loadEvents(); // Reload events after adding a new one
+                                },
+                                child: Text(
+                                    "${event.name} - ${event.startTime?.Format()}"),
+
+                              ),
+                            )
                         );
+
                       },
                     ),
                   ),
