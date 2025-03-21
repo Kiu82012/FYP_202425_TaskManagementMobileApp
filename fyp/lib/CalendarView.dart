@@ -309,34 +309,6 @@ class _CalendarViewState extends State<CalendarView> {
           ],
         ),
         body: MonthView(
-          cellBuilder: (date, events,isToday,isInMonth,hideDaysNotInMonth) {
-            return Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Display day number
-                  Text(date.day.toString()),
-                  // Display custom event widgets
-                  ...events.map((event) {
-                    // Cast to your custom event type
-                    return Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      padding: EdgeInsets.all(4),
-                      color: event.color, // Use event-specific color
-                      child: Text(
-                        event.title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ],
-              ),
-            );
-          },
           controller: eventController,
           startDay: WeekDays.sunday,
           cellAspectRatio: 0.65,
