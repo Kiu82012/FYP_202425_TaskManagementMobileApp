@@ -385,11 +385,8 @@ class _CalendarViewState extends State<CalendarView> {
                             },
                             child: Text(
                                 "${event.name} - ${event.startTime?.Format()}"),
-
                           ),
-                        )
-                        );
-
+                        ));
                       },
                     ),
                   ),
@@ -462,6 +459,10 @@ class _CalendarViewState extends State<CalendarView> {
                       // Process the selected image
                       print('Selected image path: ${pickedFile.path}');
                       CameraView.Photopath = pickedFile.path;
+
+                      // ADD LOADING ANIMATION HERE
+                      // Loading();
+
                       passPhotoToAI();
                     }
                   }
@@ -696,6 +697,10 @@ class _CalendarViewState extends State<CalendarView> {
                   // Process the selected image
                   print('Selected image path: ${pickedFile.path}');
                   CameraView.Photopath = pickedFile.path;
+
+                  // ADD LOADING ANIMATION HERE
+                  // Loading();
+
                   passPhotoToAI();
                 }
               }
