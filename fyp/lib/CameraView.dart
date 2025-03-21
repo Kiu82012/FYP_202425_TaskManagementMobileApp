@@ -65,9 +65,12 @@ class _CameraViewState extends State<CameraView> {
   }
 
   void OnConfirm(){
-    showDialog(context: context, builder: (context){
-      return Center(child: LoadingPage(),);
-    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+      ),
+    );
     widget.PassPhotoToAI();
   }
 
