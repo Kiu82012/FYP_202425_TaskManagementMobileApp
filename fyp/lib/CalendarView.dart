@@ -1,7 +1,12 @@
 import 'dart:collection';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:calendar_view/calendar_view.dart';
+import 'package:fyp/EventJsonUtils.dart';
+import 'package:fyp/EventNavigator.dart';
+import 'package:fyp/loadingPage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'AddEvent.dart';
 import 'ConfirmView.dart';
 import 'EditEvent.dart';
@@ -10,6 +15,8 @@ import 'EventDatabase.dart'; // Import your EventDatabase
 import 'package:intl/intl.dart';
 import 'TimeOfDayFunc.dart';
 import 'speech_to_text.dart';
+import 'package:avatar_glow/avatar_glow.dart';
+import 'CameraView.dart';
 
 enum CalendarType { week, month }
 
@@ -29,11 +36,17 @@ class _CalendarViewState extends State<CalendarView> {
   //==Replace showDialog with OverlayEntry==================================================================================================================
   //==============================================================================================================================
   OverlayEntry? _overlayEntry;
-
+  SpeechText st = SpeechText();
+  String spokenWords = "new words";
+  bool isSpeaking = false;
   void _showSpeechOverlay(BuildContext context) {
+    st = SpeechText();
     _overlayEntry = OverlayEntry(
-      builder: (context) => SpeechText(),
+      builder: (context) => st,
     );
+
+
+
     Overlay.of(context).insert(_overlayEntry!);
   }
 
@@ -42,6 +55,59 @@ class _CalendarViewState extends State<CalendarView> {
       _overlayEntry!.remove();
       _overlayEntry = null;
     }
+    st.stopListening.call();
+    spokenWords = SpeechText.wordSpoken;
+    // Open confirm view after this
+    PassRequirementsToAI(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+      ),
+    );
+  }
+
+  void PassRequirementsToAI(BuildContext context) async {
+    print("Passing Requirements to AI...");
+    // Generate Event using AI
+    String newEventListJson =
+        await EventNavigator.generateEvent(spokenWords, db);
+
+    print("Converting json into events...");
+    // Turn json format into event list
+    EventJsonUtils util = EventJsonUtils();
+    List<Event> newEventList = util.jsonToEvent(newEventListJson);
+
+    // Empty List Check
+    if (newEventList.isEmpty) {
+      log("Fail to identify any event");
+
+      // Show the empty list snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Fail to identify any event. Speech must be clear and precise.'),
+          duration: Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        ),
+      );
+
+      Navigator.of(context).pop();
+      return;
+    }
+
+    print("Listing events into confirm view...");
+
+    // Navigate to ConfirmView
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            ConfirmView(events: newEventList, loadEventCallback: _loadEvents),
+      ),
+    );
+    Navigator.of(context).pop();
   }
 
   //==============================================================================================================================
@@ -135,6 +201,55 @@ class _CalendarViewState extends State<CalendarView> {
     });
   }
 
+  ///
+  /// THis is camera view choice alert dialogue
+  /// returns different string according to choice, then open different camera view.
+  ///
+  Future<String?> showChoiceDialog(BuildContext context) async {
+    return await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Photo Select Option",
+            style: TextStyle(
+              color: Colors.blueAccent,
+              fontSize: 20,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text("Open Camera"),
+                onTap: () {
+                  Navigator.pop(context, "Camera"); // Return "Camera" as the choice
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text("Select from Gallery"),
+                onTap: () {
+                  Navigator.pop(context, "Gallery"); // Return "Gallery" as the choice
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog without returning a value
+              },
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Helper function to convert TimeOfDay to DateTime
   DateTime _timeOfDayToDateTime(TimeOfDay? time) {
     if (time == null) {
@@ -148,6 +263,10 @@ class _CalendarViewState extends State<CalendarView> {
   String _formatDateTime(DateTime dateTime) {
     return DateFormat('h:mm a').format(dateTime); // Example: 10:00 AM
   }
+
+  ///
+  /// THis is the end of camera view choice alert dialogue
+  ///
 
   @override
   Widget build(BuildContext context) {
@@ -165,9 +284,9 @@ class _CalendarViewState extends State<CalendarView> {
     }
   }
 
-  //==============================================================================================================================
-  //==Month View==================================================================================================================
-  //==============================================================================================================================
+  ///==============================================================================================================================
+  ///==Month View==================================================================================================================
+  ///==============================================================================================================================
 
   MaterialApp buildMonthViewApp() {
     return MaterialApp(
@@ -194,9 +313,8 @@ class _CalendarViewState extends State<CalendarView> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ConfirmView(
-                            events: db
-                                .getEventList())) // Pass eventDatabase, event chosen
-                );
+                            events: db.getEventList(), loadEventCallback: _loadEvents,)) // Pass eventDatabase, event chosen
+                    );
                 _loadEvents(); // Reload events after adding a new one
               },
             ),
@@ -211,7 +329,7 @@ class _CalendarViewState extends State<CalendarView> {
           showWeekTileBorder: true,
           onCellTap: (events, date) async {
             List<Event> selectedEvents =
-            _loadEventsOnDate(date); // Load events for the selected date
+                _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -221,7 +339,7 @@ class _CalendarViewState extends State<CalendarView> {
                       Text("Events on ${date.day}/${date.month}:"),
                       SizedBox(
                           width:
-                          45), // Add spacing between title and FloatingActionButton
+                              45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date =
@@ -238,32 +356,40 @@ class _CalendarViewState extends State<CalendarView> {
                           );
                           _loadEvents(); // Reload events after adding a new one
                         },
-                        backgroundColor: Colors.lightBlue,
-                        child: Icon(Icons.add, color: Colors.white),
+                        child: Icon(Icons.add),
                       ),
                     ],
                   ),
                   content: Container(
                     width: double.maxFinite,
-                    height: 200, // Fixed height for the outer container (optional)
+                    height: 200,
                     child: ListView.builder(
                       padding: const EdgeInsets.all(8),
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
                         Event event = selectedEvents[index];
-                        return IntrinsicHeight( // Make the height flexible
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(8),
+                        height: 60,
+                        decoration: BoxDecoration(
+                        color: Colors.lightBlue[50],
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(
+                        color: Colors.grey[400]!,
+                        width: 1.7,
+                        ),
+                        ),
+                          child: TextButton(
+                            style:ButtonStyle(
+                              foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
                             ),
-                            child: TextButton(
-                              onPressed: () async {
-                                // Navigate and add event
-                                Navigator.of(context).pop();
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
+                            onPressed: () async {
+                              // Navigate and add event
+                              Navigator.of(context).pop();
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
                                     builder: (context) => EditEvent(
                                       eventDatabase: db,
                                       selectedEvent: event,
@@ -308,31 +434,75 @@ class _CalendarViewState extends State<CalendarView> {
               GestureDetector(
                 onLongPressStart: (details) {
                   print("I am speaking");
+                  setState(() => isSpeaking = true);
                   _showSpeechOverlay(context);
                 },
                 onLongPressEnd: (details) {
                   // Close the dialog when the user releases the mic button
                   print("Stop speaking");
+                  setState(() => isSpeaking = false);
                   _closeSpeechOverlay();
                 },
-                child: FloatingActionButton(
-                  onPressed: null,
-                  child: Icon(Icons.mic),
+                child: AvatarGlow(
+                  animate: isSpeaking,
+                  glowColor: Colors.blue, // Customize glow color
+                  duration: const Duration(milliseconds: 2000),
+                  repeat: true,
+                  child: FloatingActionButton(
+                    onPressed: null,
+                    child: Icon(Icons.mic),
+                  ),
                 ),
               ),
-              Expanded(child: Container()),
+              SizedBox(width: 10), // Add spacing between buttons
+
+              // New Camera button
               FloatingActionButton(
                 onPressed: () async {
-                  SelectedDate.date = DateTime
-                      .now(); // update the selected date time to now, as users are usually looking at today's week
-                  // Navigate and add event
+                  // Show the choice dialog and wait for the user's selection
+                  String? choice = await showChoiceDialog(context);
+
+                  if (choice == "Camera") {
+                    // Open the CameraView
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CameraView(
+                          PassPhotoToAI: () => passPhotoToAI(), // Your callback function
+                        ),
+                      ),
+                    );
+                  } else if (choice == "Gallery") {
+                    // Handle gallery selection
+                    final pickedFile = await ImagePicker().pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    if (pickedFile != null) {
+                      // Process the selected image
+                      print('Selected image path: ${pickedFile.path}');
+                      CameraView.Photopath = pickedFile.path;
+
+                      // ADD LOADING ANIMATION HERE
+                      // Loading();
+
+                      passPhotoToAI();
+                    }
+                  }
+                },
+                child: Icon(Icons.camera_alt),
+              ),
+              Expanded(child: Container()),
+
+              // Existing Add button
+              FloatingActionButton(
+                onPressed: () async {
+                  SelectedDate.date = DateTime.now();
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            AddEvent(eventDatabase: db)), // Pass eventDatabase
+                        builder: (context) => AddEvent(eventDatabase: db)),
                   );
-                  _loadEvents(); // Reload events after adding a new one
+                  _loadEvents();
                 },
                 child: Icon(Icons.add),
               ),
@@ -343,9 +513,9 @@ class _CalendarViewState extends State<CalendarView> {
     );
   }
 
-  //==============================================================================================================================
-  //==Week View===================================================================================================================
-  //==============================================================================================================================
+  ///==============================================================================================================================
+  ///==Week View===================================================================================================================
+  ///==============================================================================================================================
 
   MaterialApp buildWeekViewApp() {
     return MaterialApp(
@@ -365,6 +535,40 @@ class _CalendarViewState extends State<CalendarView> {
           ],
         ),
         body: WeekView(
+          eventTileBuilder: (date, events, boundary, start, end) {
+            return Container( // Remove SingleChildScrollView
+              height: boundary.height,
+              decoration: BoxDecoration(
+                color: Colors.lightBlue[50],
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: Colors.grey[400]!,
+                  width: 1.7,
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: events.map((event) {
+                    return Container(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Text(
+                        event.title,
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          },
           controller: eventController,
           showLiveTimeLineInAllDays: false,
           heightPerMinute: 1,
@@ -376,7 +580,7 @@ class _CalendarViewState extends State<CalendarView> {
           onEventTap: (events, date) {
             // Modified to handle event taps
             List<Event> selectedEvents =
-            _loadEventsOnDate(date); // Load events for the selected date
+                _loadEventsOnDate(date); // Load events for the selected date
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -385,8 +589,7 @@ class _CalendarViewState extends State<CalendarView> {
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
                       SizedBox(
-                          width:
-                          45), // Add spacing between title and FloatingActionButton
+                          width: 45), // Add spacing between title and FloatingActionButton
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date =
@@ -416,29 +619,40 @@ class _CalendarViewState extends State<CalendarView> {
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
                         Event event = selectedEvents[index];
-                        return Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: TextButton(
-                            onPressed: () async {
-                              // Navigate and add event
-                              Navigator.of(context).pop();
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditEvent(
-                                      eventDatabase: db,
-                                      selectedEvent: event,
-                                    )), // Pass eventDatabase, event chosen
-                              );
-                              _loadEvents(); // Reload events after adding a new one
-                            },
-                            child: Text(
-                                "${event.name} - ${event.startTime?.Format()}"),
-                          ),
+                        return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Container(
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.lightBlue[50],
+                                borderRadius: BorderRadius.circular(10.0),
+                                border: Border.all(
+                                  color: Colors.grey[400]!,
+                                  width: 1.7,
+                                ),
+                              ),
+                              child: TextButton(
+                                style:ButtonStyle(
+                                  foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                                ),
+                                onPressed: () async {
+                                  // Navigate and add event
+                                  Navigator.of(context).pop();
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EditEvent(
+                                          eventDatabase: db,
+                                          selectedEvent: event,
+                                        )), // Pass eventDatabase, event chosen
+                                  );
+                                  _loadEvents(); // Reload events after adding a new one
+                                },
+                                child: Text(
+                                    "${event.name} - ${event.startTime?.Format()}"),
+
+                              ),
+                            )
                         );
                       },
                     ),
@@ -461,15 +675,59 @@ class _CalendarViewState extends State<CalendarView> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SpeechText()),
-                  );
+              GestureDetector(
+                onLongPressStart: (details) {
+                  print("I am speaking");
+                  _showSpeechOverlay(context);
                 },
-                child: Icon(Icons.mic),
+                onLongPressEnd: (details) {
+                  // Close the dialog when the user releases the mic button
+
+                  print("Stop speaking");
+                  _closeSpeechOverlay();
+                },
+                child: FloatingActionButton(
+                  onPressed: null,
+                  child: Icon(Icons.mic),
+                ),
               ),
+              SizedBox(width: 10), // Add spacing between buttons
+
+              // New Camera button
+          FloatingActionButton(
+            onPressed: () async {
+              // Show the choice dialog and wait for the user's selection
+              String? choice = await showChoiceDialog(context);
+
+              if (choice == "Camera") {
+                // Open the CameraView
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CameraView(
+                      PassPhotoToAI: () => passPhotoToAI(), // Your callback function
+                    ),
+                  ),
+                );
+              } else if (choice == "Gallery") {
+                // Handle gallery selection
+                final pickedFile = await ImagePicker().pickImage(
+                  source: ImageSource.gallery,
+                );
+                if (pickedFile != null) {
+                  // Process the selected image
+                  print('Selected image path: ${pickedFile.path}');
+                  CameraView.Photopath = pickedFile.path;
+
+                  // ADD LOADING ANIMATION HERE
+                  // Loading();
+
+                  passPhotoToAI();
+                }
+              }
+            },
+            child: Icon(Icons.camera_alt),
+          ),
               Expanded(child: Container()),
               FloatingActionButton(
                 onPressed: () async {
@@ -491,5 +749,46 @@ class _CalendarViewState extends State<CalendarView> {
         ),
       ),
     );
+  }
+
+  Future<void> passPhotoToAI() async {
+    try {
+      String json = await EventNavigator.generateEventByPhoto(
+          File(CameraView.Photopath), db);
+      EventJsonUtils ForPhoto = EventJsonUtils();
+      List<Event> Photoevent = ForPhoto.jsonToEvent(json);
+
+      // Empty List Check
+      if (Photoevent.isEmpty){
+        log("Fail to identify any event");
+
+        // Show the empty list snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fail to identify any event. Photo must be clear and precise.'),
+            duration: Duration(seconds: 5),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          ),
+        );
+
+
+        return;
+      }
+
+      if (mounted) { // not yet dispose
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfirmView(
+              events: Photoevent,
+              loadEventCallback: _loadEvents,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error processing photo: $e");
+    }
   }
 }

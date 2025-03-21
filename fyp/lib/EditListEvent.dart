@@ -5,23 +5,28 @@ import 'package:fyp/DurationFunc.dart';
 import 'package:fyp/StringFuncs.dart';
 import 'Event.dart';
 import 'EventDatabase.dart';
-import 'package:lottie/lottie.dart';
-import 'dart:async';
 
-class EditEvent extends StatefulWidget {
-  final EventDatabase eventDatabase;
+class EditListEvent extends StatefulWidget {
   final Event selectedEvent;
+  final List<Event> eventList;
+  final Function(Event) onAdd;
+  final Function(Event) onRemove;
 
-  EditEvent({required this.eventDatabase, required this.selectedEvent});
+  EditListEvent({required this.selectedEvent, required this.eventList, required this.onAdd, required this.onRemove});
 
   @override
-  _EditEventState createState() => _EditEventState();
+  _EditListEventState createState() => _EditListEventState();
 }
 
-class _EditEventState extends State<EditEvent> {
+class _EditListEventState extends State<EditListEvent> {
   final _formKey = GlobalKey<FormState>();
   final _eventNameController = TextEditingController();
   final _eventDescController = TextEditingController();
+
+  late Function(Event) onRemove;
+  late Function(Event) onAdd;
+
+  List<Event> eventList = [];
 
   Event oldEvent = Event(name: "default", date: DateTime.now(), description: "");
 
@@ -35,6 +40,11 @@ class _EditEventState extends State<EditEvent> {
   @override
   void initState() {
     super.initState();
+
+    onRemove = widget.onRemove;
+    onAdd = widget.onAdd;
+
+    eventList = widget.eventList;
 
     oldEvent = widget.selectedEvent;
 
@@ -92,66 +102,27 @@ class _EditEventState extends State<EditEvent> {
   }
 
   void _updateEvent() {
-    if (_formKey.currentState!.validate()) {
-      EventDatabase db = EventDatabase();
+    setState(() {
+      if (_formKey.currentState!.validate()) {
+        // remove old event
+        eventList.remove(oldEvent);
 
-      // remove old event
-      db.deleteEvent(oldEvent);
-      
-      // add new event to replace old one
-      Event newEvent = Event(
-        name: _eventNameController.text,
-        date: _selectedDate!,
-        startTime: _selectedStartTime,
-        endTime: _selectedEndTime,
-        duration: _selectedDuration,
-        description: _eventNameController.text,
-      );
-      
-      db.addEvent(newEvent);
+        // add new event to replace old one
+        Event newEvent = Event(
+          name: _eventNameController.text,
+          date: _selectedDate!,
+          startTime: _selectedStartTime,
+          endTime: _selectedEndTime,
+          duration: _selectedDuration,
+          description: _eventDescController.text,
+        );
 
-      _eventNameController.clear();
-      _selectedDate = null;
-      _selectedStartTime = null;
-      Navigator.of(context).pop();
-    }
-  }
+        onAdd(newEvent);
 
-  void _deleteEvent(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      // Show the Lottie animation
-      showDialog(
-        context: context,
-        barrierDismissible: false, // Prevent dismissing by tapping outside
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Lottie.asset(
-                  'assets/delete_animation2.json', // Replace with your Lottie asset
-                  width: 200,
-                  height: 200,
-                  repeat: false, // Play only once
-                ),
-                const SizedBox(height: 16),
-                const Text('Deleting event...'), // Optional message
-              ],
-            ),
-          );
-        },
-      );
-      // Perform the deletion and navigate after a delay
-      EventDatabase db = EventDatabase();
-      await db.deleteEvent(oldEvent); // Await the deletion
-
-      // Delay for a few seconds to show the animation
-      Timer(const Duration(seconds: 2), () {
-        Navigator.of(context).pop(); // Close the animation dialog
-        Navigator.of(context).pop(); // Pop the current page
-        Navigator.of(context).pop(); // Pop the previous page (if needed)
-      });
-    }
+        Navigator.of(context).pop();
+        }
+      }
+    );
   }
 
   @override
@@ -175,7 +146,7 @@ class _EditEventState extends State<EditEvent> {
             tooltip: 'Delete',
             onPressed: () {
               showDialog(
-                  context: context,
+                context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text("Delete Event"),
@@ -184,7 +155,9 @@ class _EditEventState extends State<EditEvent> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteEvent(context);
+                          onRemove(oldEvent);
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                       ),
                       TextButton(
@@ -229,6 +202,7 @@ class _EditEventState extends State<EditEvent> {
                       "Date: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
+                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
@@ -267,6 +241,7 @@ class _EditEventState extends State<EditEvent> {
                       "Time: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
+                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),
@@ -306,6 +281,7 @@ class _EditEventState extends State<EditEvent> {
                       "Duration: ",
                       textAlign: TextAlign.right,
                       style: TextStyle(
+                        color: Colors.black,
                         fontSize: 20,
                       ),
                     ),

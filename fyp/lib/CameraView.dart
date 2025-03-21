@@ -1,52 +1,52 @@
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/ConfirmView.dart';
+import 'package:fyp/Event.dart';
+import 'package:fyp/EventJsonUtils.dart';
+import 'package:fyp/EventNavigator.dart';
+import 'package:fyp/loadingPage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CameraView extends StatefulWidget {
-  const CameraView({super.key});
+  final Future<void> Function() PassPhotoToAI;
+  const CameraView({super.key, required this.PassPhotoToAI});
+
+  static late String Photopath;
 
   @override
   _CameraViewState createState() => _CameraViewState();
 }
 
 class _CameraViewState extends State<CameraView> {
-  // Camera controller to manage camera functionality
   CameraController? _controller;
-
-  // Future to track camera initialization progress
   Future<void>? _initializeControllerFuture;
+  bool _isCameraActive = false;
+  bool _isLoading = false;
+  bool _showCaptureFeedback = false;
 
-  // State flags
-  bool _isCameraActive = false;  // Whether camera preview is showing
-  bool _isLoading = false;       // Loading state during camera setup
-  bool _showCaptureFeedback = false; // Visual feedback after capture
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera(); // Initialize the camera when the view is opened
+  }
 
-  /// Initializes camera hardware and prepares preview
   Future<void> _initializeCamera() async {
     setState(() => _isLoading = true);
-
     try {
-      // 1. Get available cameras
       final cameras = await availableCameras();
-
-      // 2. Create controller with first camera (usually rear)
       _controller = CameraController(
         cameras.first,
-        ResolutionPreset.medium,  // Balanced quality/performance
+        ResolutionPreset.medium,
       );
-
-      // 3. Initialize controller
       _initializeControllerFuture = _controller!.initialize();
       await _initializeControllerFuture;
-
-      // 4. Update state to show camera preview
       setState(() {
         _isCameraActive = true;
         _isLoading = false;
       });
     } catch (e) {
-      // Handle initialization errors
       setState(() => _isLoading = false);
       _showError('Camera initialization failed');
     }
@@ -61,40 +61,45 @@ class _CameraViewState extends State<CameraView> {
       _isCameraActive = false;
       _initializeControllerFuture = null;
     });
+    Navigator.pop(context); // Return to the previous screen
   }
 
-  /// Captures photo and provides user feedback
+  void OnConfirm(){
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+      ),
+    );
+    widget.PassPhotoToAI();
+  }
+
   Future<void> _takePhoto() async {
-    // Guard clause if camera isn't ready
     if (_controller == null || !_controller!.value.isInitialized) return;
-
     try {
-      // Show visual feedback immediately
       setState(() => _showCaptureFeedback = true);
-
-      // 1. Capture image
       final image = await _controller!.takePicture();
+      CameraView.Photopath = image.path;
+      if (!mounted) return;
 
-      // 2. Show success feedback
-      _showSuccess('Photo captured!');
-
-      // 3. Keep feedback visible for 1 second
-      await Future.delayed(const Duration(seconds: 1));
-
-      // 4. Hide feedback (if still mounted)
-      if (mounted) {
-        setState(() => _showCaptureFeedback = false);
-      }
-
-      // Print path for development purposes
-      print("Captured image path: ${image.path}");
-
+      final confirmed = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PhotoPreviewScreen(
+            imagePath: image.path,
+            onConfirm: OnConfirm,
+            onRetake: () => Navigator.pop(context, false),
+          ),
+        ),
+      );
+      if (confirmed ?? false) _showSuccess('Photo saved successfully!');
     } catch (e) {
-      _showError('Failed to capture photo');
+      _showError('Failed to capture photo: ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _showCaptureFeedback = false);
     }
   }
 
-  /// Displays success message using SnackBar
   void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -105,7 +110,6 @@ class _CameraViewState extends State<CameraView> {
     );
   }
 
-  /// Displays error message using SnackBar
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -118,25 +122,8 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   void dispose() {
-    // Clean up camera resources
     _controller?.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectFromGallery() async {
-    try {
-      final pickedFile = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-      );
-
-      if (pickedFile != null) {
-        print('Selected image path: ${pickedFile.path}');
-        _showSuccess('Image selected from gallery');
-        // You can add your image handling logic here
-      }
-    } catch (e) {
-      _showError('Failed to select image: ${e.toString()}');
-    }
   }
 
   @override
@@ -144,19 +131,14 @@ class _CameraViewState extends State<CameraView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Camera Function'),
-        leading: _isCameraActive
-            ? IconButton(
+        leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: _returnToInitialView,
-        )
-            : null,
+        ),
       ),
       body: Stack(
         children: [
-          // Main content (camera preview or button)
           _buildMainContent(),
-
-          // Capture feedback overlay
           if (_showCaptureFeedback)
             const Center(
               child: Icon(
@@ -174,47 +156,17 @@ class _CameraViewState extends State<CameraView> {
             ),
         ],
       ),
-      // Floating action button only visible when camera is active
       floatingActionButton: _isCameraActive ? _buildCameraButton() : null,
     );
   }
 
-  /// Builds the appropriate main content based on current state
   Widget _buildMainContent() {
-    // Show loading indicator during initialization
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-
-    // Initial state - show camera activation button
     if (!_isCameraActive) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton.icon(
-              icon: const Icon(Icons.camera_alt),
-              label: const Text('Open Camera'),
-              onPressed: _initializeCamera,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.photo_library),
-              label: const Text('Select from Gallery'),
-              onPressed: _selectFromGallery,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              ),
-            ),
-          ],
-        ),
-      );
+      return Container();
     }
-
-    // Camera preview with initialization handling
     return FutureBuilder<void>(
       future: _initializeControllerFuture,
       builder: (context, snapshot) {
@@ -226,11 +178,54 @@ class _CameraViewState extends State<CameraView> {
     );
   }
 
-  /// Builds the camera capture button
   Widget _buildCameraButton() {
     return FloatingActionButton(
       onPressed: _takePhoto,
       child: const Icon(Icons.camera),
+    );
+  }
+}
+
+class PhotoPreviewScreen extends StatelessWidget {
+  final String imagePath;
+  final VoidCallback onConfirm;
+  final VoidCallback onRetake;
+
+  const PhotoPreviewScreen({
+    super.key,
+    required this.imagePath,
+    required this.onConfirm,
+    required this.onRetake,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Preview Photo'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: onRetake,
+        ),
+      ),
+      body: Center(
+        child: Image.file(File(imagePath)),
+      ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          FloatingActionButton(
+            onPressed: onConfirm,
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.check, color: Colors.white),
+          ),
+          FloatingActionButton(
+            onPressed: onRetake,
+            backgroundColor: Colors.red,
+            child: const Icon(Icons.close, color: Colors.white),
+          ),
+        ],
+      ),
     );
   }
 }

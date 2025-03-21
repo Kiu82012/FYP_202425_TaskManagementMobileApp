@@ -6,12 +6,14 @@ class Todolist extends StatelessWidget {
   final bool taskCompleted;
   Function(bool?)? onChanged;
   Function(BuildContext)? deleteFunction;
-  Todolist(
-      {super.key,
-      required this.taskName,
-      required this.taskCompleted,
-      required this.onChanged,
-      required this.deleteFunction});
+
+  Todolist({
+    super.key,
+    required this.taskName,
+    required this.taskCompleted,
+    required this.onChanged,
+    required this.deleteFunction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,35 +21,49 @@ class Todolist extends StatelessWidget {
       padding: const EdgeInsets.only(left: 10, right: 10, top: 30),
       child: Slidable(
         endActionPane: ActionPane(
-            motion: StretchMotion(),
-            children: [
-              SlidableAction(
-                onPressed: deleteFunction,
+          motion: const StretchMotion(),
+          children: [
+            SlidableAction(
+              onPressed: deleteFunction,
               icon: Icons.delete,
               backgroundColor: Colors.red.shade300,
-                borderRadius: BorderRadius.circular(25),
-              )
-            ],
+              borderRadius: BorderRadius.circular(25),
+            )
+          ],
         ),
         child: Container(
-          padding: EdgeInsets.all(15),
-          child: Row(children: [
-            Checkbox(
-              value: taskCompleted,
-              onChanged: onChanged,
-              activeColor: Colors.black,
-            ),
-            Text(
-              taskName,
-              style: TextStyle(
-                  decoration: taskCompleted
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none),
-            ),
-          ]),
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(25)),
+            color: Colors.lightBlue[50],
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all( // Add this line
+              color: Colors.grey[400]!, // Customize border color
+              width: 1.7,         // Customize border width
+            ),
+          ),
+          child: Row(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Checkbox(
+                  value: taskCompleted,
+                  onChanged: onChanged,
+                  activeColor: Colors.deepPurpleAccent,
+                ),
+              ),
+              const SizedBox(width: 3), // Add some spacing
+              Expanded(
+                child: Text(
+                  taskName,
+                  style: TextStyle(
+                    decoration: taskCompleted
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
