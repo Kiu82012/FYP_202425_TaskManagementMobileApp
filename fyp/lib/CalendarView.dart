@@ -303,23 +303,6 @@ class _CalendarViewState extends State<CalendarView> {
                 log("Change to week calendar");
               },
             ),
-
-            /// TEST /////// TEST /////// TEST ////
-            IconButton(
-              icon: Icon(Icons.directions_run),
-              onPressed: () async {
-                // Navigate and add event
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ConfirmView(
-                            events: db.getEventList(), loadEventCallback: _loadEvents,)) // Pass eventDatabase, event chosen
-                    );
-                _loadEvents(); // Reload events after adding a new one
-              },
-            ),
-
-            /// TEST /////// TEST /////// TEST ////
           ],
         ),
         body: MonthView(
@@ -371,16 +354,16 @@ class _CalendarViewState extends State<CalendarView> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                        color: Colors.lightBlue[50],
-                        borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(
-                        color: Colors.grey[400]!,
-                        width: 1.7,
-                        ),
-                        ),
-                          child: TextButton(
+                            height: 60,
+                            decoration: BoxDecoration(
+                            color: Colors.lightBlue[50],
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                              color: Colors.grey[400]!,
+                              width: 1.7,
+                            ),
+                          ),
+                            child: TextButton(
                             style:ButtonStyle(
                               foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
                             ),
@@ -402,8 +385,8 @@ class _CalendarViewState extends State<CalendarView> {
                                 padding: const EdgeInsets.all(8), // Add padding for better spacing
                                 child: Text(
                                   "${event.name} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime))} to ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))} - Duration: ${event.duration?.inHours ?? 0}h ${event.duration?.inMinutes.remainder(60) ?? 0}m",
-                                  maxLines: 2, // Allow text to wrap to a second line if needed
                                   overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+                                  maxLines: 2, // Allow text to wrap to a second line if needed
                                 ),
                               ),
                             ),
