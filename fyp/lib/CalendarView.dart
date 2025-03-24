@@ -467,6 +467,10 @@ class _CalendarViewState extends State<CalendarView> {
 
                       // ADD LOADING ANIMATION HERE
                       // Loading();
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+                      ),
+                      );
 
                       passPhotoToAI();
                     }
@@ -704,6 +708,10 @@ class _CalendarViewState extends State<CalendarView> {
 
                   // ADD LOADING ANIMATION HERE
                   // Loading();
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+                  ),
+                  );
 
                   passPhotoToAI();
                 }
@@ -760,6 +768,7 @@ class _CalendarViewState extends State<CalendarView> {
       }
 
       if (mounted) { // not yet dispose
+        Navigator.of(context).pop();
         Navigator.push(
           context,
           MaterialPageRoute(

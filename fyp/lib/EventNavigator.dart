@@ -55,7 +55,9 @@ class EventNavigator {
     According to the picture, identify  the elements to generate an event or more than one events, then create a json format of event using the elements.
     Input default value name ONLY WHEN DATA IS MISSING FROM AN EVENT: name: unknown event, date: $todaysDate, startTime: 0:0, endTime:0:0, duration: 1:0, description: .
     Remember the duration should include minutes as well . For example if the user said the duration is 1 hour, input duration: 1:0  , if the user said the duration is 2 hours, input duration 2:0. And so on.
+    When the year of the event is missing, PLEASE INPUT THE DEFAULT VALUE: 2025. 
     For the event date, please just use ":" between year, month, and day but do not use "/". 
+    When there is only one event name but TWO date and time, please create two events with same event name. 
     DO NOT CHANGE THE FORMAT IN JSON. 
     Responds in json format only, 
     no prefix and suffix,
