@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'dart:io';
 
@@ -56,6 +57,24 @@ class AIHelper {
     } catch (e) {
       // Handle errors
       return "Error: ${e.toString()}";
+    }
+  }
+
+  // Function to convert an image path to an Image widget
+  static Widget imageFromPath(String imagePath) {
+    // Check if the file exists
+    if (File(imagePath).existsSync()) {
+      return Image.file(
+        File(imagePath), // Load the image from the path
+        width: 200, // Set width
+        height: 200, // Set height
+        fit: BoxFit.cover, // Adjust the image fit
+      );
+    } else {
+      // If the file doesn't exist, return a placeholder
+      return Center(
+        child: Text('Image not found'),
+      );
     }
   }
 }

@@ -132,8 +132,7 @@ class _CalendarViewState extends State<CalendarView> {
   @override
   void dispose() {
     super.dispose();
-    _saveEvents;
-    ();
+    _saveEvents();
   }
 
   List<CalendarEventData> eventDataList = [];
@@ -184,9 +183,9 @@ class _CalendarViewState extends State<CalendarView> {
     List<Event> events = db.getEventList();
     List<Event> selectedEvents = events
         .where((event) =>
-            event.date.year == selectedDate.year &&
-            event.date.month == selectedDate.month &&
-            event.date.day == selectedDate.day)
+    event.date.year == selectedDate.year &&
+        event.date.month == selectedDate.month &&
+        event.date.day == selectedDate.day)
         .toList();
     selectedEvents.forEach((event) {
       print("${event.name} - ${event.startTime?.Format()}");
@@ -253,6 +252,21 @@ class _CalendarViewState extends State<CalendarView> {
       },
     );
   }
+
+  // Helper function to convert TimeOfDay to DateTime
+  DateTime _timeOfDayToDateTime(TimeOfDay? time) {
+    if (time == null) {
+      return DateTime.now(); // Fallback to current time if time is null
+    }
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, time.hour, time.minute);
+  }
+
+  // Helper function to format DateTime as a string
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('h:mm a').format(dateTime); // Example: 10:00 AM
+  }
+
   ///
   /// THis is the end of camera view choice alert dialogue
   ///
@@ -292,23 +306,6 @@ class _CalendarViewState extends State<CalendarView> {
                 log("Change to week calendar");
               },
             ),
-
-            /// TEST /////// TEST /////// TEST ////
-            IconButton(
-              icon: Icon(Icons.directions_run),
-              onPressed: () async {
-                // Navigate and add event
-                await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ConfirmView(
-                            events: db.getEventList(), loadEventCallback: _loadEvents,)) // Pass eventDatabase, event chosen
-                    );
-                _loadEvents(); // Reload events after adding a new one
-              },
-            ),
-
-            /// TEST /////// TEST /////// TEST ////
           ],
         ),
         body: MonthView(
@@ -360,16 +357,16 @@ class _CalendarViewState extends State<CalendarView> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                        color: Colors.lightBlue[50],
-                        borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(
-                        color: Colors.grey[400]!,
-                        width: 1.7,
-                        ),
-                        ),
-                          child: TextButton(
+                            height: 60,
+                            decoration: BoxDecoration(
+                            color: Colors.lightBlue[50],
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                              color: Colors.grey[400]!,
+                              width: 1.7,
+                            ),
+                          ),
+                            child: TextButton(
                             style:ButtonStyle(
                               foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
                             ),
@@ -380,16 +377,24 @@ class _CalendarViewState extends State<CalendarView> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => EditEvent(
-                                          eventDatabase: db,
-                                          selectedEvent: event,
-                                        )), // Pass eventDatabase, event chosen
-                              );
-                              _loadEvents(); // Reload events after adding a new one
-                            },
-                            child: Text(
-                                "${event.name} - ${event.startTime?.Format()}"),
+                                      eventDatabase: db,
+                                      selectedEvent: event,
+                                    ),
+                                  ), // Pass eventDatabase, event chosen
+                                );
+                                _loadEvents(); // Reload events after adding a new one
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8), // Add padding for better spacing
+                                child: Text(
+                                  "${event.name} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime))} to ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))} - Duration: ${event.duration?.inHours ?? 0}h ${event.duration?.inMinutes.remainder(60) ?? 0}m",
+                                  overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
+                                  maxLines: 2, // Allow text to wrap to a second line if needed
+                                ),
+                              ),
+                            ),
                           ),
-                        ));
+                        );
                       },
                     ),
                   ),
@@ -465,6 +470,10 @@ class _CalendarViewState extends State<CalendarView> {
 
                       // ADD LOADING ANIMATION HERE
                       // Loading();
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+                      ),
+                      );
 
                       passPhotoToAI();
                     }
@@ -635,7 +644,6 @@ class _CalendarViewState extends State<CalendarView> {
                               ),
                             )
                         );
-
                       },
                     ),
                   ),
@@ -711,6 +719,10 @@ class _CalendarViewState extends State<CalendarView> {
 
                   // ADD LOADING ANIMATION HERE
                   // Loading();
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+                    ),
+                  );
 
                   passPhotoToAI();
                 }
@@ -752,6 +764,8 @@ class _CalendarViewState extends State<CalendarView> {
       if (Photoevent.isEmpty){
         log("Fail to identify any event");
 
+        Navigator.pop(context); // pop away from animation
+
         // Show the empty list snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -762,11 +776,11 @@ class _CalendarViewState extends State<CalendarView> {
           ),
         );
 
-
         return;
       }
 
       if (mounted) { // not yet dispose
+        Navigator.of(context).pop();
         Navigator.push(
           context,
           MaterialPageRoute(
