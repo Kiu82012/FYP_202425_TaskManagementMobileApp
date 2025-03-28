@@ -276,6 +276,7 @@ class _AddEventState extends State<AddEvent> {
                     child:ElevatedButton(
                       onPressed: _updateEvent,
                       child: Text('Save changes'),
+
                     ),
                   ),
                 ],

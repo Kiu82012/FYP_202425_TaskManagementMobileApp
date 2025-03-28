@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
@@ -7,6 +8,7 @@ import 'package:fyp/EventJsonUtils.dart';
 import 'package:fyp/EventNavigator.dart';
 import 'package:fyp/loadingPage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'AddEvent.dart';
 import 'ConfirmView.dart';
 import 'EditEvent.dart';
@@ -174,6 +176,7 @@ class _CalendarViewState extends State<CalendarView> {
 
     print("Reloaded Calendar");
   }
+
 
   List<Event> _loadEventsOnDate(DateTime selectedDate) {
     db.loadEvents();
@@ -657,19 +660,27 @@ class _CalendarViewState extends State<CalendarView> {
               GestureDetector(
                 onLongPressStart: (details) {
                   print("I am speaking");
+                  setState(() => isSpeaking = true);
                   _showSpeechOverlay(context);
                 },
                 onLongPressEnd: (details) {
                   // Close the dialog when the user releases the mic button
-
                   print("Stop speaking");
+                  setState(() => isSpeaking = false);
                   _closeSpeechOverlay();
                 },
-                child: FloatingActionButton(
-                  onPressed: null,
-                  child: Icon(Icons.mic),
+                child: AvatarGlow(
+                  animate: isSpeaking,
+                  glowColor: Colors.blue, // Customize glow color
+                  duration: const Duration(milliseconds: 2000),
+                  repeat: true,
+                  child: FloatingActionButton(
+                    onPressed: null,
+                    child: Icon(Icons.mic),
+                  ),
                 ),
               ),
+
               SizedBox(width: 10), // Add spacing between buttons
 
               // New Camera button

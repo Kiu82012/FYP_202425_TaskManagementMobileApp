@@ -79,8 +79,57 @@ class _ToDoListView extends State<ToDoListView> {
 
 //save new task
   void saveNewTask() {
+    String newTaskName = _controller.text.trim();
+
+    if (newTaskName.isEmpty) {
+      // Show an error message if the task name is empty
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text("Task name cannot be empty!"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    // Check if the task name already exists in the list
+    bool taskExists = db.toDoList.any((task) => task[0] == newTaskName);
+
+    if (taskExists) {
+      // Show an error message if the task name already exists
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text('Task "$newTaskName" already exists!'),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     setState(() {
-      db.toDoList.insert(0, [_controller.text, false]);
+      db.toDoList.insert(0, [newTaskName, false]);
       _searchToDo();
       _controller.clear();
     });
