@@ -43,9 +43,10 @@ class EventNavigator {
   static Future<String> generateEventByPhoto(File photoFile, EventDatabase database) async {
     print("Generating event json...");
 
+    print("Formatting Date...");
     String todaysDate = formatDateTime(DateTime.now().toString());
 
-    String thisyear = formatDateTime(DateTime.now().year.toString());
+    String thisyear = formatDateTimeExtractYear(DateTime.now().toString());
 
     String eventListJson = EventJsonUtils().eventToJson(database.getEventList());
 
@@ -68,6 +69,8 @@ class EventNavigator {
     
     """;
 
+    print("Passing Prompt...");
+
     String newJsonEvent = await AIHelper.sendTextAndImageToAI(text: prompt, imageFiles: [photoFile]);
 
     print(newJsonEvent);
@@ -82,6 +85,12 @@ class EventNavigator {
   static String formatDateTime(String dateTime) {
     DateTime parsedDate = DateTime.parse(dateTime);
     String formattedDate = '${parsedDate.year}:${parsedDate.month.toString().padLeft(2, '0')}:${parsedDate.day.toString().padLeft(2, '0')}';
+    return formattedDate;
+  }
+
+  static String formatDateTimeExtractYear(String dateTime) {
+    DateTime parsedDate = DateTime.parse(dateTime);
+    String formattedDate = '${parsedDate.year}';
     return formattedDate;
   }
 }

@@ -60,11 +60,11 @@ class EventJsonUtils{
     return eventList;
   }
 
-
   String trimJson(String jsonInput) {
     // Trim whitespace and handle empty input
     String trimmed = jsonInput.trim();
     if (trimmed.isEmpty) return '[]';
+    if (!trimmed.contains("{") || !trimmed.contains("}")) return '[]';
 
     // Find first '[' and last ']'
     final firstBracket = trimmed.indexOf('[');

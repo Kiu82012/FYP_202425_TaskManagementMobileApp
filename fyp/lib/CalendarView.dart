@@ -709,8 +709,8 @@ class _CalendarViewState extends State<CalendarView> {
                   // ADD LOADING ANIMATION HERE
                   // Loading();
                   Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
-                  ),
+                      builder: (context) => const LoadingPage(lottieAsset: 'assets/loading.json'),
+                    ),
                   );
 
                   passPhotoToAI();
@@ -753,6 +753,8 @@ class _CalendarViewState extends State<CalendarView> {
       if (Photoevent.isEmpty){
         log("Fail to identify any event");
 
+        Navigator.pop(context); // pop away from animation
+
         // Show the empty list snackbar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -762,7 +764,6 @@ class _CalendarViewState extends State<CalendarView> {
             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           ),
         );
-
 
         return;
       }
