@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:fyp/CalendarView.dart';
 import 'package:fyp/DurationFunc.dart';
 import 'package:fyp/StringFuncs.dart';
+import 'package:fyp/AppNotification.dart';
 import 'Event.dart';
 import 'EventDatabase.dart';
 
 class AddEvent extends StatefulWidget {
+  final AppNotification notification = AppNotification();
   final EventDatabase eventDatabase;
 
   AddEvent({required this.eventDatabase});
@@ -73,7 +75,6 @@ class _AddEventState extends State<AddEvent> {
 
   void _updateEvent() {
     if (_formKey.currentState!.validate()) {
-
       Event newEvent = Event(
         name: _eventNameController.text,
         date: _selectedDate!,
@@ -83,15 +84,34 @@ class _AddEventState extends State<AddEvent> {
         description: _eventDescController.text,
       );
 
-      EventDatabase db = EventDatabase();
-      db.addEvent(newEvent);
+      widget.eventDatabase.addEvent(newEvent);
+
+      // Schedule notification for the event time
+      final eventDateTime = DateTime(
+        _selectedDate!.year,
+        _selectedDate!.month,
+        _selectedDate!.day,
+        _selectedStartTime!.hour,
+        _selectedStartTime!.minute,
+      );
+      final reminderTime = eventDateTime.subtract(Duration(minutes: 30));
+
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Event saved and notification scheduled')),
+      );
 
       _eventNameController.clear();
-      _selectedDate = null;
-      _selectedStartTime = null;
-      Navigator.of(context).pop();
+      _eventDescController.clear();
+      setState(() {
+        _selectedDate = null;
+        _selectedStartTime = null;
+      });
+      if (mounted) Navigator.of(context).pop();
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -7,30 +7,38 @@ import 'package:fyp/ToDoListView.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_flutter/adapters.dart';
-
+import 'package:fyp/AppNotification.dart';
+import 'package:fyp/NotificationTestPage.dart';
 import 'package:fyp/CameraView.dart';
 import 'package:flutter/material.dart';
 import 'AIChatroom.dart';
 import 'AIHelper.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   // Initial Database
   await Hive.initFlutter();
   //open 2 boxes for separated database
   await Hive.openBox('mybox');
-
   Hive.registerAdapter(TimeOfDayAdapter());
   Hive.registerAdapter(DurationAdapter());
   Hive.registerAdapter(EventAdapter());
-
-
   await Hive.openBox('eventBox');
+
+  final notificationService = AppNotification();
+  await notificationService.init();
+
+
+
   runApp(const MyApp());
 
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +89,7 @@ class _HomeState extends State<Home> {
           Center(
               child: AIChatroom()
           ),
+          Center(child: NotificationTestPage()),
         ],
         onPageChanged: (index) {
           setState(() {
@@ -101,6 +110,11 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),
             label: 'Chat',
+
+          ),
+          BottomNavigationBarItem( // Add this item
+            icon: Icon(Icons.notifications),
+            label: 'Test Notifs',
           ),
         ],
         currentIndex: _selectedIndex,

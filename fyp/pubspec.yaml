@@ -65,7 +65,12 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   json_serializable: ^6.0.1
   loading_indicator: ^3.1.1
-
+  flutter_local_notifications: ^19.0.0
+  flutter_timezone: ^4.1.0
+  permission_handler: ^10.4.0
+  device_info_plus: ^9.0.0
+  platform: ^3.1.0
+  app_settings: ^5.0.2
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
