@@ -25,8 +25,8 @@ void main() async {
   Hive.registerAdapter(EventAdapter());
   await Hive.openBox('eventBox');
 
-  final notificationService = AppNotification();
-  await notificationService.init();
+/*  final notificationService = AppNotification();
+  await notificationService.init();*/
 
 
 
@@ -37,6 +37,7 @@ void main() async {
 class MyApp extends StatelessWidget {
 
   const MyApp({super.key});
+
 
 
 

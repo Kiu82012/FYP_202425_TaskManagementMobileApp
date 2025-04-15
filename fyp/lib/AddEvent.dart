@@ -8,7 +8,6 @@ import 'Event.dart';
 import 'EventDatabase.dart';
 
 class AddEvent extends StatefulWidget {
-  final AppNotification notification = AppNotification();
   final EventDatabase eventDatabase;
 
   AddEvent({required this.eventDatabase});
@@ -72,43 +71,20 @@ class _AddEventState extends State<AddEvent> {
       });
     }
   }
-
   void _updateEvent() {
     if (_formKey.currentState!.validate()) {
       Event newEvent = Event(
         name: _eventNameController.text,
         date: _selectedDate!,
-        startTime: _selectedStartTime!,
-        endTime: _selectedEndTime!,
-        duration: _selectedDuration!,
         description: _eventDescController.text,
       );
 
-      widget.eventDatabase.addEvent(newEvent);
-
-      // Schedule notification for the event time
-      final eventDateTime = DateTime(
-        _selectedDate!.year,
-        _selectedDate!.month,
-        _selectedDate!.day,
-        _selectedStartTime!.hour,
-        _selectedStartTime!.minute,
-      );
-      final reminderTime = eventDateTime.subtract(Duration(minutes: 30));
-
-
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Event saved and notification scheduled')),
-      );
-
+      EventDatabase db = EventDatabase();
+      db.addEvent(newEvent);
       _eventNameController.clear();
-      _eventDescController.clear();
-      setState(() {
-        _selectedDate = null;
-        _selectedStartTime = null;
-      });
-      if (mounted) Navigator.of(context).pop();
+      _selectedDate = null;
+      _selectedStartTime = null;
+      Navigator.of(context).pop();
     }
   }
 
