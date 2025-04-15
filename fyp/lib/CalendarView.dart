@@ -331,7 +331,7 @@ class _CalendarViewState extends State<CalendarView> {
                   title: Row(
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
-                      Padding(padding: EdgeInsets.only(left: 45.0)),
+                      Padding(padding: EdgeInsets.only(left: 33.0)),
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date = date;
@@ -355,7 +355,7 @@ class _CalendarViewState extends State<CalendarView> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        childAspectRatio: 1.5,
+                        childAspectRatio: 2,
                       ),
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
@@ -372,7 +372,7 @@ class _CalendarViewState extends State<CalendarView> {
                           child: TextButton(
                             style: ButtonStyle(
                               foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
-                              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.all(8)),
+                              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.symmetric(horizontal: 4, vertical: 4)),
                             ),
                             onPressed: () async {
                               Navigator.of(context).pop();
@@ -391,29 +391,36 @@ class _CalendarViewState extends State<CalendarView> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                              Text(
-                                event.name,
-                                style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                                Padding(padding: EdgeInsets.only(bottom: 4.0)),
-                                Text(
-                                    '${_formatDateTime(_timeOfDayToDateTime(event.startTime))} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))}',
-                                      style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
+                                Flexible(  // Add Flexible
+                                  child: Text(
+                                    event.name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                              ),
+                                ),
+                                SizedBox(height: 8),  // Reduced from 18.0
+                                Flexible(  // Add Flexible
+                                  child: Text(
+                                    '${_formatDateTime(_timeOfDayToDateTime(event.startTime))} - '
+                                        '${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 1,  // Add maxLines
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         );
                       },
-                    ),
+                    )
                   ),
                   actions: <Widget>[
                     TextButton(
