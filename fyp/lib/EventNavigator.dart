@@ -22,7 +22,8 @@ class EventNavigator {
     Input default value name: unknown event, date: $todaysDate, startTime: 0:0, endTime:0:0, duration: 1:0, description: .
      as long as the user did not provide one of each value,input the default value of the missing part, otherwise,input the value that given by the user
     User can input more than 1 event. Please notice that if there are two event name. If that happened, you should also generate 1 more event following the above rule I gave you
-    Remember the duration should include minutes as well . For example if the user said the duration is 1 hour, input duration: 1:0  , if the user said the duration is 2 hours, input duration 2:0. And so on.
+    Remember the duration should include minutes as well . For example if the user said the duration is 1 hour, input duration: 1:0  , if the user said the duration is 2 hours, 
+    input duration 2:0. And so on.
     DO NOT CHANGE THE FORMAT IN JSON. 
     Responds in json format only, 
     no prefix and suffix,
@@ -57,7 +58,8 @@ class EventNavigator {
     This is the knowledge base: $eventListJson .
     According to the picture, identify  the elements to generate an event or more than one events, then create a json format of event using the elements.
     Input default value name ONLY WHEN DATA IS MISSING FROM AN EVENT: name: unknown event, date: $todaysDate, startTime: 0:0, endTime:0:0, duration: 1:0, description: .
-    Remember the duration should include minutes as well . For example if the user said the duration is 1 hour, input duration: 1:0  , if the user said the duration is 2 hours, input duration 2:0. And so on.
+    Remember the duration should include minutes as well . For example if the user said the duration is 1 hour, input duration: 1:0  , if the user said the duration 
+    is 2 hours, input duration 2:0. And so on.
     When the year of the event is missing, PLEASE INPUT THE DEFAULT VALUE: $thisyear. 
     For the event date, please just use ":" between year, month, and day but do not use "/". 
     When there is only one event name but TWO date and time, please create two events with same event name. 

@@ -208,6 +208,7 @@ class _ToDoListView extends State<ToDoListView> {
     double progressValue = getProgressValue(); // Calculate progress value
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFFEEEFF5),
       appBar: AppBar(
         title: Text("To Do List"),

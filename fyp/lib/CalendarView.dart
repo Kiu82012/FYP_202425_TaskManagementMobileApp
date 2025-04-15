@@ -303,6 +303,7 @@ class _CalendarViewState extends State<CalendarView> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text("Calendar"),
           elevation: 100,
@@ -330,7 +331,7 @@ class _CalendarViewState extends State<CalendarView> {
                   title: Row(
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
-                      SizedBox(width: 45),
+                      Padding(padding: EdgeInsets.only(left: 45.0)),
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date = date;
@@ -530,6 +531,7 @@ class _CalendarViewState extends State<CalendarView> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: Text("Calendar"),
           elevation: 100,
@@ -668,6 +670,7 @@ class _CalendarViewState extends State<CalendarView> {
                                 Text(
                                   event.startTime?.Format() ?? '',
                                   style: TextStyle(fontSize: 12),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
