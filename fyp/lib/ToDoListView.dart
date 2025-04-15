@@ -205,136 +205,150 @@ class _ToDoListView extends State<ToDoListView> {
   Widget build(BuildContext context) {
     int completedTaskCount = getCompletedTaskCount();
     int totalTaskCount = _foundToDo.length;
-    double progressValue = getProgressValue(); // Calculate progress value
+    double progressValue = getProgressValue();
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true, // Changed to true
       backgroundColor: Color(0xFFEEEFF5),
       appBar: AppBar(
         title: Text("To Do List"),
         elevation: 100,
       ),
-      body: Padding(
-        // Add padding
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Container(
-              // Search bar container
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
               ),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(0),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.black,
-                    size: 20,
-                  ),
-                  prefixIconConstraints: BoxConstraints(
-                    maxHeight: 20,
-                    maxWidth: 25,
-                  ),
-                  border: InputBorder.none,
-                  hintText: "Search",
-                  hintStyle: TextStyle(color: Colors.grey[600]),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Align to the left
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "My Tasks",
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            width: 30, // Adjust size as needed
-                            height: 30, // Adjust size as needed
-                            child: CircularProgressIndicator(
-                              value: progressValue,
-                              strokeWidth: 5, // Adjust thickness as needed
-                              backgroundColor: Colors.grey[300],
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 8), // Space between circle and text
-                      Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              '$completedTaskCount of $totalTaskCount tasks',
-                              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                            ),
-                          ),
-                          Container(
-                            height: 1,
-                            color: Colors.grey[400],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: _foundToDo.isEmpty
-                  ? Center(
+              child: IntrinsicHeight(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Lottie.asset(
-                      "assets/empty_list.json",
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.contain,
+                    // Search bar
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Colors.black,
+                            size: 20,
+                          ),
+                          prefixIconConstraints: BoxConstraints(
+                            maxHeight: 20,
+                            maxWidth: 25,
+                          ),
+                          border: InputBorder.none,
+                          hintText: "Search",
+                          hintStyle: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 16),
-                    Text(
-                      "You Have Done All Tasks! 👍",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    SizedBox(height: 20),
+                    // Header section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "My Tasks",
+                              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: 30,
+                                    height: 30,
+                                    child: CircularProgressIndicator(
+                                      value: progressValue,
+                                      strokeWidth: 5,
+                                      backgroundColor: Colors.grey[300],
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(width: 8),
+                              Stack(
+                                alignment: Alignment.bottomCenter,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.only(bottom: 2),
+                                    child: Text(
+                                      '$completedTaskCount of $totalTaskCount tasks',
+                                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 1,
+                                    color: Colors.grey[400],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Task list
+                    Expanded(
+                      child: _foundToDo.isEmpty
+                          ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                              "assets/empty_list.json",
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.contain,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              "You Have Done All Tasks! 👍",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                          : ListView.builder(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 8.0),
+                        itemCount: _foundToDo.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Todolist(
+                            taskName: _foundToDo[index][0],
+                            taskCompleted: _foundToDo[index][1],
+                            onChanged: (value) => checkBoxChanged(value, index),
+                            deleteFunction: (context) => deleteTask(index),
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
-              )
-                  : ListView.builder(
-                padding: const EdgeInsets.only(top: 8.0),
-                itemCount: _foundToDo.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Todolist(
-                    taskName: _foundToDo[index][0],
-                    taskCompleted: _foundToDo[index][1],
-                    onChanged: (value) => checkBoxChanged(value, index),
-                    deleteFunction: (context) => deleteTask(index),
-                  );
-                },
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: createNewTask,
