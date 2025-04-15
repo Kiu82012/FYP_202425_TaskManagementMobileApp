@@ -86,10 +86,6 @@ class _HomeState extends State<Home> {
           Center(
             child: ToDoListView(),
           ),
-          Center(
-              child: AIChatroom()
-          ),
-          Center(child: NotificationTestPage()),
         ],
         onPageChanged: (index) {
           setState(() {
@@ -106,15 +102,6 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist),
             label: 'To-Do-List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-
-          ),
-          BottomNavigationBarItem( // Add this item
-            icon: Icon(Icons.notifications),
-            label: 'Test Notifs',
           ),
         ],
         currentIndex: _selectedIndex,
