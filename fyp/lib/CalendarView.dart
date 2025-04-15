@@ -392,25 +392,22 @@ class _CalendarViewState extends State<CalendarView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                               Text(
-                              event.name,
-                              style: TextStyle(
+                                event.name,
+                                style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              '${_formatDateTime(_timeOfDayToDateTime(event.startTime))} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))}',
-                                style: TextStyle(fontSize: 12),
-                              ),
+                                Padding(padding: EdgeInsets.only(bottom: 4.0)),
                                 Text(
-                                  'Duration: ${_formatDuration(event.duration ?? Duration.zero)}',
-                                  style: TextStyle(
-                                    fontSize: 11,
+                                    '${_formatDateTime(_timeOfDayToDateTime(event.startTime))} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))}',
+                                      style: TextStyle(
+                                    fontSize: 12,
                                     color: Colors.grey[600],
-                                ),
-                                ),
+                                  ),
+                              ),
                               ],
                             ),
                           ),
@@ -597,33 +594,31 @@ class _CalendarViewState extends State<CalendarView> {
                   title: Row(
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
-                      SizedBox(width: 45),
+                      Padding(padding: EdgeInsets.only(left: 45.0)),
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date = date;
                           Navigator.of(context).pop();
                           await Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => AddEvent(eventDatabase: db)),
+                            MaterialPageRoute(builder: (context) => AddEvent(eventDatabase: db)),
                           );
                           _loadEvents();
                         },
-                        backgroundColor: Colors.lightBlue,
-                        child: Icon(Icons.add, color: Colors.white),
+                        child: Icon(Icons.add),
                       ),
                     ],
                   ),
                   content: Container(
                     width: double.maxFinite,
-                    height: 200, // You may adjust this height as needed
+                    height: 200,
                     child: GridView.builder(
                       padding: const EdgeInsets.all(8),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, // Two items per row
+                        crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        childAspectRatio: 1.5, // Adjust this for box proportions
+                        childAspectRatio: 1.5,
                       ),
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
@@ -647,10 +642,11 @@ class _CalendarViewState extends State<CalendarView> {
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => EditEvent(
-                                      eventDatabase: db,
-                                      selectedEvent: event,
-                                    )),
+                                  builder: (context) => EditEvent(
+                                    eventDatabase: db,
+                                    selectedEvent: event,
+                                  ),
+                                ),
                               );
                               _loadEvents();
                             },
@@ -664,13 +660,16 @@ class _CalendarViewState extends State<CalendarView> {
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                   ),
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                SizedBox(height: 4),
+                                Padding(padding: EdgeInsets.only(bottom: 4.0)),
                                 Text(
-                                  event.startTime?.Format() ?? '',
-                                  style: TextStyle(fontSize: 12),
-                                  overflow: TextOverflow.ellipsis,
+                                  '${_formatDateTime(_timeOfDayToDateTime(event.startTime))} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
                                 ),
                               ],
                             ),
