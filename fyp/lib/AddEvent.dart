@@ -103,18 +103,21 @@ class _AddEventState extends State<AddEvent> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
+            shrinkWrap: true,
+            physics: AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.all(16),
             children: <Widget>[
-              TextFormField(
-                controller: _eventNameController,
-                decoration: InputDecoration(labelText: 'Event Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an event name';
-                  }
-                  return null;
-                },
-              ),
+                TextFormField(
+                  controller: _eventNameController,
+                  decoration: InputDecoration(labelText: 'Event Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an event name';
+                    }
+                    return null;
+                  },
+                ),
               SizedBox(height: 16.0),
 
               //=======================================\\
