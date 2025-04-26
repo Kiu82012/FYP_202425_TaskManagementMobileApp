@@ -205,31 +205,37 @@ class _EditEventState extends State<EditEvent> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                controller: _eventNameController,
-                decoration: InputDecoration(labelText: 'Event Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an event name';
-                  }
-                  return null;
-                },
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height - 200,
               ),
-              SizedBox(height: 16.0),
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+              child: Column(
+              children: <Widget>[
+                TextFormField(
+                  controller: _eventNameController,
+                  decoration: InputDecoration(labelText: 'Event Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an event name';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 16.0),
               //=======================================\\
               //===============Date====================\\
               //=======================================\\
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      "Date: ",
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: 20,
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        "Date: ",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 20,
                       ),
                     ),
                   ),
@@ -380,8 +386,10 @@ class _EditEventState extends State<EditEvent> {
               ),
             ],
           ),
-        ),
-      ),
+        )
+      )
+    ),
+    ),
     );
   }
 }
