@@ -601,7 +601,7 @@ class _CalendarViewState extends State<CalendarView> {
                   title: Row(
                     children: [
                       Text("Events on ${date.day}/${date.month}:"),
-                      Padding(padding: EdgeInsets.only(left: 45.0)),
+                      Padding(padding: EdgeInsets.only(left: 33.0)),
                       FloatingActionButton(
                         onPressed: () async {
                           SelectedDate.date = date;
@@ -619,71 +619,78 @@ class _CalendarViewState extends State<CalendarView> {
                   content: Container(
                     width: double.maxFinite,
                     height: 200,
-                    child: GridView.builder(
-                      padding: const EdgeInsets.all(8),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 1.5,
-                      ),
-                      itemCount: selectedEvents.length,
-                      itemBuilder: (context, index) {
-                        Event event = selectedEvents[index];
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: Colors.lightBlue[50],
-                            borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(
-                              color: Colors.grey[400]!,
-                              width: 1.7,
+                      child: GridView.builder(
+                        padding: const EdgeInsets.all(8),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 2,
+                        ),
+                        itemCount: selectedEvents.length,
+                        itemBuilder: (context, index) {
+                          Event event = selectedEvents[index];
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.lightBlue[50],
+                              borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(
+                                color: Colors.grey[400]!,
+                                width: 1.7,
+                              ),
                             ),
-                          ),
-                          child: TextButton(
-                            style: ButtonStyle(
-                              foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
-                              padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.all(8)),
+                            child: TextButton(
+                              style: ButtonStyle(
+                                foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+                                padding: WidgetStateProperty.all<EdgeInsetsGeometry>(EdgeInsets.symmetric(horizontal: 4, vertical: 4)),
+                              ),
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditEvent(
+                                      eventDatabase: db,
+                                      selectedEvent: event,
+                                    ),
+                                  ),
+                                );
+                                _loadEvents();
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Flexible(  // Add Flexible
+                                    child: Text(
+                                      event.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),  // Reduced from 18.0
+                                  Flexible(  // Add Flexible
+                                    child: Text(
+                                      '${_formatDateTime(_timeOfDayToDateTime(event.startTime))} - '
+                                          '${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                      maxLines: 1,  // Add maxLines
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            onPressed: () async {
-                              Navigator.of(context).pop();
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditEvent(
-                                    eventDatabase: db,
-                                    selectedEvent: event,
-                                  ),
-                                ),
-                              );
-                              _loadEvents();
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  event.name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Padding(padding: EdgeInsets.only(bottom: 4.0)),
-                                Text(
-                                  '${_formatDateTime(_timeOfDayToDateTime(event.startTime))} - ${_formatDateTime(_timeOfDayToDateTime(event.startTime).add(event.duration ?? Duration.zero))}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      )
                   ),
                   actions: <Widget>[
                     TextButton(
