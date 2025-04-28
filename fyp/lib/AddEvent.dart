@@ -100,14 +100,17 @@ class _AddEventState extends State<AddEvent> {
         elevation: 100,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Form(
           key: _formKey,
-          child: ListView(
-            shrinkWrap: true,
-            physics: AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.all(16),
-            children: <Widget>[
+          child: ConstrainedBox(
+    constraints: BoxConstraints(
+    minHeight: MediaQuery.of(context).size.height - 200,
+    ),
+    child: SingleChildScrollView(
+    physics: AlwaysScrollableScrollPhysics(),
+    child: Column(
+    children: <Widget>[
                 TextFormField(
                   controller: _eventNameController,
                   decoration: InputDecoration(labelText: 'Event Name'),
@@ -284,6 +287,8 @@ class _AddEventState extends State<AddEvent> {
           ),
         ),
       ),
+    ),
+    )
     );
   }
 }
