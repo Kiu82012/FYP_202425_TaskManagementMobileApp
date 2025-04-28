@@ -16,7 +16,8 @@ class EventNavigator {
 
     String prompt = """
     
-    Calendar App Knowledge Base, DO NOT CHANGE THE DATA FROM THE KNOWLEDGE BASE.
+    Calendar App Knowledge Base.
+    DO NOT CHANGE THE DATA FROM THE KNOWLEDGE BASE.
     YOU SHOULD ONLY REVIEW AND AVOID EVENT TIME OVERLAPPING.
     This is the knowledge base: $eventListJson .
     Input default value name: unknown event, date: $todaysDate, startTime: 0:0, endTime:0:0, duration: 1:0, description: .
@@ -27,9 +28,10 @@ class EventNavigator {
     DO NOT CHANGE THE FORMAT IN JSON. 
     Responds in json format only, 
     no prefix and suffix,
-    User requirements: $requirementString
-    
-    You only have to provide the new added events into the json, events that already in the knowledge base  are not required.
+    User requirements: {$requirementString}
+    If the user requirement says what they would do, only extract important values from the requirement. e.g. I would like to bike. Extract 'Bike' as event name
+    If the ussr potentially say something wrong, try to understand and translate into better form before putting into title. e.g. go to the Jim. Extract 'Gym' as event name
+    You only have to provide the new added events into the json, events that already in the knowledge base are not required.
     
     """;
 

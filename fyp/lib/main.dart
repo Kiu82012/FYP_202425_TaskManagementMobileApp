@@ -38,12 +38,12 @@ class MyApp extends StatelessWidget {
 
   const MyApp({super.key});
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: Locale('en', 'US'), // 強制手機用呢個語言，唔用default啲語言，就可以避免vpn問題
+      supportedLocales: [Locale('en', 'US'), Locale('en', 'UK'), Locale('zh', 'HK')],
+
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
