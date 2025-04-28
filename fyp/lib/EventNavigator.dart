@@ -12,6 +12,8 @@ class EventNavigator {
 
     String todaysDate = formatDateTime(DateTime.now().toString());
 
+    String thisyear = formatDateTimeExtractYear(DateTime.now().toString());
+
     String eventListJson = EventJsonUtils().eventToJson(database.getEventList());
 
     String prompt = """
@@ -25,6 +27,8 @@ class EventNavigator {
     User can input more than 1 event. Please notice that if there are two event name. If that happened, you should also generate 1 more event following the above rule I gave you
     Remember the duration should include minutes as well . For example if the user said the duration is 1 hour, input duration: 1:0  , if the user said the duration is 2 hours, 
     input duration 2:0. And so on.
+    When the year of the event is missing, PLEASE INPUT THE DEFAULT VALUE: $thisyear. 
+    For the event date, please just use ":" between year, month, and day but do not use "/". 
     DO NOT CHANGE THE FORMAT IN JSON. 
     Responds in json format only, 
     no prefix and suffix,
