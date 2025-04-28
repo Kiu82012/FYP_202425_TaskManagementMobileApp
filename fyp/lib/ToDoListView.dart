@@ -208,7 +208,7 @@ class _ToDoListView extends State<ToDoListView> {
     double progressValue = getProgressValue();
 
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Changed to true
+      resizeToAvoidBottomInset: true,
       backgroundColor: Color(0xFFEEEFF5),
       appBar: AppBar(
         title: Text("To Do List"),
@@ -222,129 +222,114 @@ class _ToDoListView extends State<ToDoListView> {
               constraints: BoxConstraints(
                 minHeight: constraints.maxHeight,
               ),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: [
-                    // Search bar
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(0),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                          prefixIconConstraints: BoxConstraints(
-                            maxHeight: 20,
-                            maxWidth: 25,
-                          ),
-                          border: InputBorder.none,
-                          hintText: "Search",
-                          hintStyle: TextStyle(color: Colors.grey[600]),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Search bar
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(0),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.black,
+                          size: 20,
                         ),
+                        prefixIconConstraints: BoxConstraints(
+                          maxHeight: 20,
+                          maxWidth: 25,
+                        ),
+                        border: InputBorder.none,
+                        hintText: "Search",
+                        hintStyle: TextStyle(color: Colors.grey[600]),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    // Header section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "My Tasks",
-                              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-                            ),
+                  ),
+                  SizedBox(height: 20),
+                  // Header section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "My Tasks",
+                            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                           ),
-                          Row(
-                            children: [
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 30,
-                                    height: 30,
-                                    child: CircularProgressIndicator(
-                                      value: progressValue,
-                                      strokeWidth: 5,
-                                      backgroundColor: Colors.grey[300],
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(width: 8),
-                              Stack(
-                                alignment: Alignment.bottomCenter,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.only(bottom: 2),
-                                    child: Text(
-                                      '$completedTaskCount of $totalTaskCount tasks',
-                                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 1,
-                                    color: Colors.grey[400],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Task list
-                    Expanded(
-                      child: _foundToDo.isEmpty
-                          ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        ),
+                        SizedBox(height: 10),
+                        Row(
                           children: [
-                            Lottie.asset(
-                              "assets/empty_list.json",
-                              width: 200,
-                              height: 200,
-                              fit: BoxFit.contain,
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircularProgressIndicator(
+                                    value: progressValue,
+                                    strokeWidth: 5,
+                                    backgroundColor: Colors.grey[300],
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 16),
+                            SizedBox(width: 8),
                             Text(
-                              "You Have Done All Tasks! 👍",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              '$completedTaskCount of $totalTaskCount tasks',
+                              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                             ),
                           ],
                         ),
-                      )
-                          : ListView.builder(
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        padding: const EdgeInsets.only(top: 8.0),
-                        itemCount: _foundToDo.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Todolist(
-                            taskName: _foundToDo[index][0],
-                            taskCompleted: _foundToDo[index][1],
-                            onChanged: (value) => checkBoxChanged(value, index),
-                            deleteFunction: (context) => deleteTask(index),
-                          );
-                        },
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 20),
+                  // Task list
+                  if (_foundToDo.isEmpty)
+                    Center(
+                      child: Column(
+                        children: [
+                          Lottie.asset(
+                            "assets/empty_list.json",
+                            width: 200,
+                            height: 200,
+                            fit: BoxFit.contain,
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            "You Have Done All Tasks! 👍",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: _foundToDo.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Todolist(
+                          taskName: _foundToDo[index][0],
+                          taskCompleted: _foundToDo[index][1],
+                          onChanged: (value) => checkBoxChanged(value, index),
+                          deleteFunction: (context) => deleteTask(index),
+                        );
+                      },
+                    ),
+                ],
               ),
             ),
           );
