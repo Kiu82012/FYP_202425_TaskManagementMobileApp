@@ -8,7 +8,7 @@ class SpeechText extends StatefulWidget {
   late Function() stopListening;
 
 
-  static String wordSpoken = " hihihih";
+  static String wordSpoken = "";
 
   @override
   State<SpeechText> createState() =>_SpeechToTextState();
