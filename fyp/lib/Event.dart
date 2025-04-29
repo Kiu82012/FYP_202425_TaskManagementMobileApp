@@ -15,13 +15,13 @@ class Event {
   final DateTime date;
 
   @HiveField(2)
-  final TimeOfDay? startTime;
+  TimeOfDay? startTime = TimeOfDay(hour: 12, minute: 0);
 
   @HiveField(3)
-  final TimeOfDay? endTime;
+  TimeOfDay? endTime = TimeOfDay(hour: 13, minute: 0);
 
   @HiveField(4)
-  final Duration? duration;
+  Duration? duration = Duration(hours: 1);
 
   @HiveField(5)
   final String description;
