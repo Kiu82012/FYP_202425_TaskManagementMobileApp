@@ -27,7 +27,7 @@ class ConfirmListViewItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(event.name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold), textAlign: TextAlign.left), // Event name
+              Text(event.name, overflow: TextOverflow.ellipsis, maxLines: 2, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold), textAlign: TextAlign.left), // Event name
               SizedBox(height: 8),
               Text('Date: ${date[2].trimCharLeft("0")}/${date[1].trimCharLeft("0")}/${date[0]}', style: TextStyle(fontSize: 17, color: Colors.black)), // Rearranged date format
               Text('Starts at: ${event.startTime?.format(context)}', style: TextStyle(fontSize: 17, color: Colors.black)), // Start Time
