@@ -73,10 +73,15 @@ class _AddEventState extends State<AddEvent> {
   }
   void _updateEvent() {
     if (_formKey.currentState!.validate()) {
+
+      // add new event to replace old one
       Event newEvent = Event(
         name: _eventNameController.text,
         date: _selectedDate!,
-        description: _eventDescController.text,
+        startTime: _selectedStartTime,
+        endTime: _selectedEndTime,
+        duration: _selectedDuration,
+        description: _eventNameController.text,
       );
 
       EventDatabase db = EventDatabase();
