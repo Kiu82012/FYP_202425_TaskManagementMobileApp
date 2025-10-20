@@ -1,6 +1,6 @@
 
 
-# 🛒 Final Year Project 
+# 🛒 Final Year Project (Grade: A-)
 
 > A task management mobile app with AI functions (Gemini LLM) intgerated. 
 
