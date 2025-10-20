@@ -4,24 +4,12 @@
 
 > A task management mobile app with AI functions (Gemini LLM) intgerated. 
 
----
 
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Screenshots](#-screenshots)
-- [Future Enhancements](#-future-enhancements)
-- [Author](#-author)
-
----
 
 ## 🎯 Overview
 
 This is my Final Year Project (FYP) -- **A Task management mobile app** built with the framework Flutter and the language Dart. The app includes a to-do list and a calendar. The main part is the calendar.
+> My contribution: Whole To-do list function, voice command AI functions and AI prompt adjustment
 
 **Key Highlights:**
 - ✨ Add, view and delete events manually
